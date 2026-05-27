@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonCard } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add, notificationsOutline, personCircle, trendingUpOutline } from 'ionicons/icons';
+import { add, calendarOutline, chevronForwardOutline, notificationsOutline, personCircle, qrCodeOutline, restaurantOutline, scanOutline, trendingUpOutline, walletOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -9,7 +9,6 @@ import { add, notificationsOutline, personCircle, trendingUpOutline } from 'ioni
   imports: [
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonContent,
     IonFab,
     IonFabButton,
@@ -20,6 +19,16 @@ import { add, notificationsOutline, personCircle, trendingUpOutline } from 'ioni
 })
 export class HomePage {
   constructor() {
-    addIcons({add, notificationsOutline, personCircle, trendingUpOutline});
+    addIcons({
+      add,
+      calendarOutline,
+      chevronForwardOutline,
+      notificationsOutline,
+      personCircle,
+      restaurantOutline,
+      qrCodeOutline,
+      trendingUpOutline,
+      walletOutline
+    });
   }
 }
