@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonButtons, IonButton } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonCard } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add, notificationsOutline, personCircle } from 'ionicons/icons';
+import { add, notificationsOutline, personCircle, trendingUpOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -15,11 +15,11 @@ import { add, notificationsOutline, personCircle } from 'ionicons/icons';
     IonFabButton,
     IonIcon,
     IonButtons,
-    IonButton
+    IonButton,
 ],
 })
 export class HomePage {
   constructor() {
-    addIcons({add, notificationsOutline, personCircle});
+    addIcons({add, notificationsOutline, personCircle, trendingUpOutline});
   }
 }

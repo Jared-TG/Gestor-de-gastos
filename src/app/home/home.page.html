@@ -13,16 +13,24 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-fab vertical="bottom" horizontal="end">
-  <ion-fab-button>
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
 
-<ion-content [fullscreen]="true">
-  
-
-  <div id="container">
+<ion-content>
+  <div class="summary-card">
+    <div>
+      <span>Total del mes</span>
+      <strong>$4,500.00</strong>
+      <div>
+        <ion-icon name="trending-up-outline" aria-hidden="true"></ion-icon>
+        <span>12% vs mes anterior</span>
+      </div>
+    </div>
+        <ion-icon name="trending-up-outline" aria-hidden="true" class="arrowDecoration"></ion-icon>
 
   </div>
+
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
