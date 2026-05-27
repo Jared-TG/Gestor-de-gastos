@@ -1,24 +1,25 @@
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonButtons, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add } from 'ionicons/icons';
+import { add, notificationsOutline, personCircle } from 'ionicons/icons';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: 
-  [
+  imports: [
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
     IonFab,
     IonFabButton,
-    IonIcon
-  ],
+    IonIcon,
+    IonButtons,
+    IonButton
+],
 })
 export class HomePage {
   constructor() {
-    addIcons({add});
+    addIcons({add, notificationsOutline, personCircle});
   }
 }

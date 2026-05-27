@@ -25,3 +25,27 @@
 #container a {
   text-decoration: none;
 }
+
+.profile-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+.profile-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  color: #0456C5;
+}
+
+.profile-icon {
+  font-size: 28px;
+}
