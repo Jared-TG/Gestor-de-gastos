@@ -14,6 +14,12 @@
   </ion-toolbar>
 </ion-header>
 
+<ion-fab vertical="bottom" horizontal="end">
+  <ion-fab-button (click)="addGasto()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
 <ion-content>
   <div class="summary-card">
     <div>
@@ -55,9 +61,4 @@
     <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
   </button>
 
-  <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button>
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 </ion-content>

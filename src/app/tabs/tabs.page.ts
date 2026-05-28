@@ -1,0 +1,58 @@
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import {
+  IonIcon,
+  IonLabel,
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { homeOutline, walletOutline, qrCodeOutline, statsChartOutline } from 'ionicons/icons';
+
+@Component({
+  selector: 'app-tabs',
+  template: `
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="home">
+          <ion-icon name="home-outline"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="gastos">
+          <ion-icon name="wallet-outline"></ion-icon>
+          <ion-label>Gastos</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="escanear">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          <ion-label>Escanear</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="resumen">
+          <ion-icon name="stats-chart-outline"></ion-icon>
+          <ion-label>Resumen</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  `,
+  standalone: true,
+  imports: [
+    IonIcon,
+    IonLabel,
+    IonTabBar,
+    IonTabButton,
+    IonTabs,
+  ],
+})
+export class TabsPage {
+  constructor() {
+    addIcons({
+      homeOutline,
+      walletOutline,
+      qrCodeOutline,
+      statsChartOutline,
+    });
+  }
+}
