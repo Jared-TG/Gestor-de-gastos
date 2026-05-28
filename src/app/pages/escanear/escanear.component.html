@@ -1,8 +1,8 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar color="background">
     <div class="header-container">
-      <span class="brand-title">👤 GastoFácil</span>
-      <span class="page-title">Escanear ticket</span>
+      <span class="brand-title">GastoFácil</span>
+      <ion-note color="medium" class="page-title">Escanear ticket</ion-note>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -11,31 +11,53 @@
   <div class="main-layout-container">
     
     <div class="viewfinder-wrapper">
-      <div id="scannerZone" #scannerZone class="camera-canvas-box">
-        </div>
-      <p class="instruction-text">Alinea el ticket con el recuadro</p>
+      <div id="scannerZone" #scannerZone class="camera-canvas-box"></div>
+      
+      <ion-badge color="dark" class="instruction-badge">
+        Alinea el ticket con el recuadro
+      </ion-badge>
     </div>
 
-    <div class="controls-card">
-      <div class="action-buttons">
-        <button class="btn btn-primary">📷 Tomar foto</button>
-        <button class="btn btn-secondary">🖼️ Galería</button>
-      </div>
-
-      <div class="recent-capture">
-        <div class="capture-info">
-          <div class="mini-preview"></div>
-          <div class="meta">
-            <span class="title">Captura reciente</span>
-            <span class="sub">Ticket_20231024_123.jpg</span>
-          </div>
+    <ion-card class="controls-card ion-no-margin">
+      <ion-card-content class="controls-content">
+        
+        <div class="action-buttons-row">
+          <ion-button expand="block" color="primary" class="action-btn">
+            <ion-icon slot="start" name="camera"></ion-icon>
+            Tomar foto
+          </ion-button>
+          
+          <ion-button expand="block" fill="light" class="action-btn gallery-btn">
+            <ion-icon slot="start" name="image" color="primary"></ion-icon>
+            Galería
+          </ion-button>
         </div>
-        <button class="btn-delete">🗑️</button>
-      </div>
 
-      <button class="btn-ai">✨ Analizar con IA</button>
-      <p class="disclaimer">Nuestra IA detectará automáticamente montos, fechas y conceptos.</p>
-    </div>
+        <ion-item lines="none" class="recent-capture-item">
+          <ion-thumbnail slot="start" class="mini-preview-thumbnail">
+            <div class="placeholder-thumb"></div>
+          </ion-thumbnail>
+          
+          <ion-label>
+            <h3>Captura reciente</h3>
+            <p>Ticket_20231024_123.jpg</p>
+          </ion-label>
+          
+          <ion-button slot="end" fill="clear" color="danger" class="ion-no-margin">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <ion-button expand="block" class="btn-ai-analyze">
+          <ion-icon slot="start" name="sparkles"></ion-icon>
+          Analizar con IA
+        </ion-button>
+        
+        <p class="disclaimer-text">
+          Nuestra IA detectará automáticamente montos, fechas y conceptos.
+        </p>
+      </ion-card-content>
+    </ion-card>
 
   </div>
 </ion-content>

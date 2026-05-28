@@ -1,20 +1,53 @@
-import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild, Renderer2 } from '@angular/core';
+import { 
+  IonContent, 
+  IonHeader, 
+  IonTitle, 
+  IonToolbar,
+  IonCard,
+  IonCardContent,
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonThumbnail,
+  IonBadge,
+  IonNote
+} from '@ionic/angular/standalone';
 import { CameraPreview, CameraPreviewOptions } from '@capacitor-community/camera-preview';
+import { addIcons } from 'ionicons';
+import { camera, image, trash, sparkles } from 'ionicons/icons';
 
 @Component({
   selector: 'app-escanear',
   templateUrl: './escanear.component.html',
   styleUrls: ['./escanear.component.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonContent],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonButton,
+    IonIcon,
+    IonItem,
+    IonLabel,
+    IonThumbnail,
+    IonBadge,
+    IonNote
+],
 })
 export class EscanearComponent implements AfterViewInit, OnDestroy {
   @ViewChild('scannerZone', { read: ElementRef }) scannerZone!: ElementRef;
   private isCameraActive = false;
 
+  constructor(private renderer: Renderer2) {
+    // Register specific vector icon glyphs for tree-shaking performance
+    addIcons({ camera, image, trash, sparkles });
+  }
+
   ngAfterViewInit() {
-    // A small execution macro-task delay ensures Vite and Angular finish rendering layouts
     setTimeout(() => {
       this.initializeScanner();
     }, 300);
@@ -23,17 +56,16 @@ export class EscanearComponent implements AfterViewInit, OnDestroy {
   async initializeScanner() {
     if (!this.scannerZone) return;
 
-    // Grab the exact DOM dimensions of the target viewfinder container box
     const rect = this.scannerZone.nativeElement.getBoundingClientRect();
 
     const options: CameraPreviewOptions = {
-      parent: 'scannerZone', // Bind the camera canvas directly inside this DIV container
+      parent: 'scannerZone',
       position: 'rear',
       x: rect.left,
       y: rect.top,
-      width: rect.width,   // Safe bounded width (e.g. ~280px) instead of full monitor screen
-      height: rect.height, // Safe bounded height (e.g. ~380px)
-      toBack: false,       // Keep it on top of the container base layer
+      width: rect.width,
+      height: rect.height,
+      toBack: false,
       enableZoom: false,
       disableExifHeaderStripping: true
     };
