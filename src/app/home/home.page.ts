@@ -17,7 +17,8 @@ import { add, calendarOutline, chevronForwardOutline, notificationsOutline, pers
     IonIcon,
     IonButtons,
     IonButton,
-  ],
+    IonTitle
+],
 })
 export class HomePage {
   constructor(private router: Router) {

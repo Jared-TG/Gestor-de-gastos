@@ -1,0 +1,26 @@
+.profile-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 1rem;
+}
+
+.profile-title {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    color: #0456C5;
+}
+
+.profile-icon {
+    font-size: 28px;
+}
+
+ion-content {
+    --background: #f5f7fb;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+}
