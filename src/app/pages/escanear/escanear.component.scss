@@ -1,0 +1,164 @@
+ion-content {
+  --background: #f8f9fa; 
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --border-style: none;
+  padding: 8px 16px;
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+
+    .brand-title {
+      font-weight: 700;
+      color: #0d6efd;
+      font-size: 1.1rem;
+    }
+    .page-title {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.main-layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  justify-content: space-between;
+}
+
+/* * Viewfinder Layout Area (Centering logic)
+ * The flex properties on the wrapper lock the larger box to the center.
+ */
+.viewfinder-wrapper {
+  flex: 1; // Take up remaining vertical space
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Horizontal center
+  justify-content: center; // Vertical center
+  margin-bottom: 24px; // Spacing before the bottom card
+
+  .camera-canvas-box {
+    /* * NEW DIMENSIONS: Increased and dynamic 
+     * Maximizes screen space while retaining padding and rounded edges.
+     */
+    width: 88%; // Dynamic width to use more screen real estate
+    max-width: 360px; // Optional safety cap for larger tablets
+    height: 420px; // Increased vertical height
+    
+    background: #000000; /* Dark backdrop for the camera stream */
+    border: 3px solid #00f0ff;
+    border-radius: 40px; // Larger radius for the larger box
+    box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+
+    /* Force the plugin's video stream element to fill the container perfectly */
+    video, data-box, div {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important; // Ensures camera ratio expands to cover the whole container
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 1 !important;
+    }
+  }
+
+  .instruction-text {
+    margin-top: 18px;
+    background: rgba(33, 37, 41, 0.85);
+    color: #ffffff;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+}
+
+/* Dashboard Controls (Preserved aesthetic) */
+.controls-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+
+    .btn {
+      flex: 1;
+      border: none;
+      padding: 14px;
+      font-weight: 600;
+      border-radius: 16px;
+      font-size: 0.9rem;
+
+      &.btn-primary {
+        background: #0056f3;
+        color: white;
+      }
+      &.btn-secondary {
+        background: #f1f3f5;
+        color: #495057;
+      }
+    }
+  }
+}
+
+.recent-capture {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 10px 14px;
+  border-radius: 16px;
+
+  .capture-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .mini-preview {
+      width: 36px;
+      height: 36px;
+      background: #adb5bd;
+      border-radius: 8px;
+    }
+    .meta {
+      display: flex;
+      flex-direction: column;
+      .title { font-size: 0.85rem; font-weight: 600; color: #212529;}
+      .sub { font-size: 0.75rem; color: #6c757d; }
+    }
+  }
+  .btn-delete { background: transparent; border: none; color: #dc3545; font-size: 1rem; }
+}
+
+.btn-ai {
+  background: #50fabb;
+  color: #053721;
+  font-weight: 700;
+  padding: 16px;
+  border: none;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(80, 250, 187, 0.25);
+}
+
+.disclaimer {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-align: center;
+  margin: 0;
+}

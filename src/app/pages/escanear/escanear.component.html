@@ -1,3 +1,41 @@
-<p>
-  escanear works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <div class="header-container">
+      <span class="brand-title">👤 GastoFácil</span>
+      <span class="page-title">Escanear ticket</span>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="main-layout-container">
+    
+    <div class="viewfinder-wrapper">
+      <div id="scannerZone" #scannerZone class="camera-canvas-box">
+        </div>
+      <p class="instruction-text">Alinea el ticket con el recuadro</p>
+    </div>
+
+    <div class="controls-card">
+      <div class="action-buttons">
+        <button class="btn btn-primary">📷 Tomar foto</button>
+        <button class="btn btn-secondary">🖼️ Galería</button>
+      </div>
+
+      <div class="recent-capture">
+        <div class="capture-info">
+          <div class="mini-preview"></div>
+          <div class="meta">
+            <span class="title">Captura reciente</span>
+            <span class="sub">Ticket_20231024_123.jpg</span>
+          </div>
+        </div>
+        <button class="btn-delete">🗑️</button>
+      </div>
+
+      <button class="btn-ai">✨ Analizar con IA</button>
+      <p class="disclaimer">Nuestra IA detectará automáticamente montos, fechas y conceptos.</p>
+    </div>
+
+  </div>
+</ion-content>
