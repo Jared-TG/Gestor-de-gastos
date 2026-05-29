@@ -1,10 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <div slot="start" class="profile-group">
-      <ion-button fill="clear" aria-label="perfil">
+      <ion-button fill="clear" aria-label="perfil" class="ion-no-margin ion-no-padding">
         <ion-icon slot="icon-only" name="person-circle" class="profile-icon"></ion-icon>
       </ion-button>
-      <ion-title class="profile-title">Gasto Facil</ion-title>
+      <h1 class="profile-title ion-no-margin">Gasto Facil</h1>
     </div>
     <ion-buttons slot="end">
       <ion-button fill="clear" aria-label="Notificaciones" class="notification-icon">
@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <button class="scan-card" type="button">
+  <button class="scan-card" type="button" routerLink="/escanear">
     <ion-icon name="qr-code-outline" aria-hidden="true" class="qrIcon"></ion-icon>
     <div>
       <strong>Escanear ticket</strong>

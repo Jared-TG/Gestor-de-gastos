@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonButtons, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, calendarOutline, chevronForwardOutline, notificationsOutline, personCircle, qrCodeOutline, restaurantOutline, trendingUpOutline, walletOutline } from 'ionicons/icons';
@@ -17,7 +17,8 @@ import { add, calendarOutline, chevronForwardOutline, notificationsOutline, pers
     IonIcon,
     IonButtons,
     IonButton,
-    IonTitle
+    IonTitle,
+    RouterModule
 ],
 })
 export class HomePage {

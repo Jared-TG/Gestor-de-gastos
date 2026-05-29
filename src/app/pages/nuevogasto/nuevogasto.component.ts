@@ -8,12 +8,15 @@ import {
 import { addIcons } from 'ionicons';
 import { personCircle } from 'ionicons/icons';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-nuevogasto',
   templateUrl: './nuevogasto.component.html',
   styleUrls: ['./nuevogasto.component.scss'],
   standalone: true,
   imports: [
+    RouterModule,
     ReactiveFormsModule,
     IonButtons,
     IonButton,

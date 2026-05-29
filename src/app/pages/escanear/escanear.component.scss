@@ -4,7 +4,7 @@ ion-content {
 
 ion-toolbar {
   --background: #ffffff;
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
 
   .header-container {
     display: flex;
@@ -16,7 +16,7 @@ ion-toolbar {
       font-weight: 800;
       color: #0d6efd;
       font-size: 1.2rem;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.01875rem;
     }
     .page-title {
       font-size: 0.9rem;
@@ -29,7 +29,7 @@ ion-toolbar {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px;
+  padding: 1rem;
   justify-content: space-between;
 }
 
@@ -40,16 +40,16 @@ ion-toolbar {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 
   .camera-canvas-box {
     width: 88%;
-    max-width: 360px;
-    height: 420px;
+    max-width: 22.5rem;
+    height: 26.25rem;
     background: #000000;
-    border: 3px solid #00f0ff;
-    border-radius: 40px;
-    box-shadow: 0 12px 32px rgba(0, 240, 255, 0.3);
+    border: 0.1875rem solid #00f0ff;
+    border-radius: 2.5rem;
+    box-shadow: 0 0.75rem 2rem rgba(0, 240, 255, 0.3);
     position: relative;
     overflow: hidden;
 
@@ -65,47 +65,47 @@ ion-toolbar {
   }
 
   .instruction-badge {
-    margin-top: 18px;
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --padding-top: 8px;
-    --padding-bottom: 8px;
+    margin-top: 1.125rem;
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
     font-size: 0.85rem;
     font-weight: 500;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     background: rgba(33, 37, 41, 0.85);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(0.25rem);
   }
 }
 
 /* Dashboard Controls Configuration */
 .controls-card {
   background: #ffffff;
-  border-radius: 28px;
-  --box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  border-radius: 1.75rem;
+  --box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.04);
   
   .controls-content {
-    padding: 20px;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
   }
 }
 
 .action-buttons-row {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
 
   .action-btn {
     flex: 1;
-    --border-radius: 16px;
+    --border-radius: 1rem;
     font-weight: 600;
     font-size: 0.95rem;
     margin: 0;
     
     &::part(native) {
-      padding-top: 14px;
-      padding-bottom: 14px;
+      padding-top: 0.875rem;
+      padding-bottom: 0.875rem;
     }
   }
 
@@ -118,14 +118,14 @@ ion-toolbar {
 /* Recent Captured Asset Component Block */
 .recent-capture-item {
   --background: #f8f9fa;
-  --border-radius: 18px;
-  border: 1px solid #e9ecef;
-  --inner-padding-end: 8px;
-  --padding-start: 12px;
+  --border-radius: 1.125rem;
+  border: 0.0625rem solid #e9ecef;
+  --inner-padding-end: 0.5rem;
+  --padding-start: 0.75rem;
 
   .mini-preview-thumbnail {
-    width: 40px;
-    height: 40px;
+    width: 2.5rem;
+    height: 2.5rem;
     margin-top: 0;
     margin-bottom: 0;
 
@@ -133,7 +133,7 @@ ion-toolbar {
       width: 100%;
       height: 100%;
       background: #adb5bd;
-      border-radius: 8px;
+      border-radius: 0.5rem;
     }
   }
 
@@ -142,7 +142,7 @@ ion-toolbar {
       font-size: 0.9rem;
       font-weight: 600;
       color: #212529;
-      margin-bottom: 2px;
+      margin-bottom: 0.125rem;
     }
     p {
       font-size: 0.75rem;
@@ -156,14 +156,14 @@ ion-toolbar {
   margin: 0;
   --background: #50fabb;
   --color: #053721;
-  --border-radius: 18px;
+  --border-radius: 1.125rem;
   font-weight: 700;
   font-size: 1rem;
-  box-shadow: 0 4px 14px rgba(80, 250, 187, 0.35);
+  box-shadow: 0 0.25rem 0.875rem rgba(80, 250, 187, 0.35);
   
   &::part(native) {
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
 }
 
@@ -172,6 +172,6 @@ ion-toolbar {
   color: #6c757d;
   text-align: center;
   margin: 0;
-  padding: 0 4px;
+  padding: 0 0.25rem;
   line-height: 1.3;
 }
