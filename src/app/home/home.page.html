@@ -1,8 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Gasto Facil
-    </ion-title>
+    <div slot="start" class="profile-group">
+      <ion-button fill="clear" aria-label="perfil">
+        <ion-icon slot="icon-only" name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+      <ion-title class="profile-title">Gasto Facil</ion-title>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" aria-label="Notificaciones" class="notification-icon">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-fab vertical="bottom" horizontal="end">
@@ -11,15 +19,51 @@
   </ion-fab-button>
 </ion-fab>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Gasto Facil</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-fab vertical="bottom" horizontal="end">
+  <ion-fab-button (click)="addGasto()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<ion-content>
+  <div class="summary-card">
+    <div>
+      <span>Total del mes</span>
+      <strong>$4,500.00</strong>
+      <div>
+        <ion-icon name="trending-up-outline" aria-hidden="true"></ion-icon>
+        <span>12% vs mes anterior</span>
+      </div>
+    </div>
+    <ion-icon name="trending-up-outline" aria-hidden="true" class="arrowDecoration"></ion-icon>
+
   </div>
+
+  <div class="mini-cards">
+    <div class="mini-card">
+      <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+      <span>Hoy</span>
+      <strong>$120</strong>
+    </div>
+    <div class="mini-card">
+      <ion-icon name="wallet-outline" aria-hidden="true"></ion-icon>
+      <span>Gastos</span>
+      <strong>15</strong>
+    </div>
+    <div class="mini-card">
+      <ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon>
+      <span>Top</span>
+      <strong>Comida</strong>
+    </div>
+  </div>
+
+  <button class="scan-card" type="button">
+    <ion-icon name="qr-code-outline" aria-hidden="true" class="qrIcon"></ion-icon>
+    <div>
+      <strong>Escanear ticket</strong>
+      <span>Anade gastos automaticamente</span>
+    </div>
+    <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+  </button>
+
 </ion-content>

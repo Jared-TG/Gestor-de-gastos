@@ -1,27 +1,3 @@
 <ion-app>
-  <ion-tabs>
-    <ion-router-outlet></ion-router-outlet>
-
-    <ion-tab-bar slot="bottom">
-      <ion-tab-button tab="home" [routerLink]="['/home']">
-        <ion-icon [icon]="homeIcon"></ion-icon>
-        <ion-label>Inicio</ion-label>
-      </ion-tab-button>
-
-      <ion-tab-button tab="gastos" [routerLink]="['/gastos']">
-        <ion-icon [icon]="gastosIcon"></ion-icon>
-        <ion-label>Gastos</ion-label>
-      </ion-tab-button>
-
-      <ion-tab-button tab="escanear" [routerLink]="['/escanear']">
-        <ion-icon [icon]="escanearIcon"></ion-icon>
-        <ion-label>Escanear</ion-label>
-      </ion-tab-button>
-
-      <ion-tab-button tab="resumen" [routerLink]="['/resumen']">
-        <ion-icon [icon]="resumenIcon"></ion-icon>
-        <ion-label>Resumen</ion-label>
-      </ion-tab-button>
-    </ion-tab-bar>
-  </ion-tabs>
+  <ion-router-outlet></ion-router-outlet>
 </ion-app>
