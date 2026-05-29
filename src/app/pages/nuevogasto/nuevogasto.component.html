@@ -1,8 +1,8 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
     <div slot="start" class="profile-group">
       <ion-buttons slot="start">
-        <ion-back-button defaultHref="/home"></ion-back-button>
+        <ion-back-button defaultHref="/home" text=""></ion-back-button>
       </ion-buttons>
       <ion-title class="profile-title">Nuevo Gasto</ion-title>
     </div>
@@ -14,6 +14,122 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
+  
+  <div class="header-image-container">
+    <div class="header-image-placeholder"></div>
+  </div>
 
+  <form [formGroup]="gastoForm" (ngSubmit)="guardar()" class="gasto-form">
+    
+    <div class="input-group">
+      <div class="custom-label">Concepto</div>
+      <div class="input-wrapper">
+        <ion-input 
+          formControlName="concepto" 
+          placeholder="¿En qué gastaste hoy?"
+          class="custom-input">
+        </ion-input>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="custom-label">Monto</div>
+      <div class="input-wrapper monto-wrapper">
+        <span class="currency-symbol">$</span>
+        <ion-input 
+          formControlName="monto" 
+          type="number"
+          placeholder="0.00"
+          class="custom-input monto-input">
+        </ion-input>
+      </div>
+    </div>
+
+    <ion-row class="date-category-row">
+      <ion-col size="6" class="ion-no-padding padding-right-sm">
+        <div class="input-group">
+          <div class="custom-label">Fecha</div>
+          <div class="input-wrapper">
+            <ion-input 
+              type="date"
+              formControlName="fecha"
+              class="custom-input">
+            </ion-input>
+          </div>
+        </div>
+      </ion-col>
+      <ion-col size="6" class="ion-no-padding padding-left-sm">
+        <div class="input-group">
+          <div class="custom-label">Categoría</div>
+          <div class="input-wrapper select-wrapper">
+            <ion-select 
+              formControlName="categoria"
+              placeholder="Seleccionar"
+              interface="popover"
+              class="custom-input custom-select">
+              <ion-select-option value="comida">Comida</ion-select-option>
+              <ion-select-option value="transporte">Transporte</ion-select-option>
+              <ion-select-option value="servicios">Servicios</ion-select-option>
+              <ion-select-option value="entretenimiento">Entretenimiento</ion-select-option>
+              <ion-select-option value="otros">Otros</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <div class="input-group">
+      <div class="custom-label">Método de pago</div>
+      <div class="payment-methods">
+        <button type="button" 
+                class="payment-chip" 
+                [class.active]="gastoForm.get('metodoPago')?.value === 'efectivo'"
+                (click)="gastoForm.get('metodoPago')?.setValue('efectivo')">
+          Efectivo
+        </button>
+        <button type="button" 
+                class="payment-chip" 
+                [class.active]="gastoForm.get('metodoPago')?.value === 'tarjeta'"
+                (click)="gastoForm.get('metodoPago')?.setValue('tarjeta')">
+          Tarjeta
+        </button>
+        <button type="button" 
+                class="payment-chip" 
+                [class.active]="gastoForm.get('metodoPago')?.value === 'transferencia'"
+                (click)="gastoForm.get('metodoPago')?.setValue('transferencia')">
+          Transferencia
+        </button>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <div class="custom-label">Notas</div>
+      <div class="input-wrapper text-area-wrapper">
+        <ion-textarea 
+          formControlName="notas"
+          placeholder="Agrega más detalles aquí..."
+          rows="4"
+          class="custom-input custom-textarea">
+        </ion-textarea>
+      </div>
+    </div>
+
+    <div class="actions">
+      <ion-button expand="block" color="primary" type="submit" class="btn-guardar">
+        Guardar
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="primary" (click)="cancelar()" class="btn-cancelar">
+        Cancelar
+      </ion-button>
+    </div>
+
+    <div class="scan-banner">
+      <p>Puedes ingresar el gasto manualmente o escanear un ticket para que la IA lo haga por ti.</p>
+      <button type="button" class="scan-button">
+        <ion-icon name="qr-code-outline"></ion-icon> Escanear ticket
+      </button>
+    </div>
+
+  </form>
 </ion-content>

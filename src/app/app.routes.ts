@@ -33,17 +33,17 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'nuevogasto',
+        loadComponent: () =>
+          import('./pages/nuevogasto/nuevogasto.component').then(
+            (m) => m.NuevogastoComponent
+          ),
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
       },
     ],
-  },
-  {
-    path: 'nuevogasto',
-    loadComponent: () =>
-      import('./pages/nuevogasto/nuevogasto.component').then(
-        (m) => m.NuevogastoComponent
-      ),
   },
 ];
