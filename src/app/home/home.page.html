@@ -13,11 +13,6 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-fab vertical="bottom" horizontal="end">
-  <ion-fab-button>
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
 
 <ion-fab vertical="bottom" horizontal="end">
   <ion-fab-button (click)="addGasto()">
@@ -29,31 +24,30 @@
   <div class="summary-card">
     <div>
       <span>Total del mes</span>
-      <strong>$4,500.00</strong>
+      <strong>{{ totalMes() | currency:'$':'symbol':'1.2-2' }}</strong>
       <div>
         <ion-icon name="trending-up-outline" aria-hidden="true"></ion-icon>
-        <span>12% vs mes anterior</span>
+        <span>{{ conteoGastos() }} gastos este mes</span>
       </div>
     </div>
     <ion-icon name="trending-up-outline" aria-hidden="true" class="arrowDecoration"></ion-icon>
-
   </div>
 
   <div class="mini-cards">
     <div class="mini-card">
       <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
       <span>Hoy</span>
-      <strong>$120</strong>
+      <strong>{{ totalHoy() | currency:'$':'symbol':'1.0-0' }}</strong>
     </div>
     <div class="mini-card">
       <ion-icon name="wallet-outline" aria-hidden="true"></ion-icon>
       <span>Gastos</span>
-      <strong>15</strong>
+      <strong>{{ conteoGastos() }}</strong>
     </div>
     <div class="mini-card">
       <ion-icon name="restaurant-outline" aria-hidden="true"></ion-icon>
       <span>Top</span>
-      <strong>Comida</strong>
+      <strong>{{ topCategoria() }}</strong>
     </div>
   </div>
 
@@ -66,4 +60,41 @@
     <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
   </button>
 
+  <div class="gastos-recientes-section">
+    <div class="gastos-header">
+      <h2>Gastos recientes</h2>
+      <a routerLink="/gastos">Ver más</a>
+    </div>
+
+    @if (gastosRecientes().length > 0) {
+      <div class="gastos-list">
+        @for (gasto of gastosRecientes(); track gasto.id) {
+          <div class="gasto-card">
+            <div class="gasto-icon-wrapper">
+              <ion-icon [name]="getIconForCategory(gasto.categoria_id)"></ion-icon>
+            </div>
+            <div class="gasto-info">
+              <strong>{{ gasto.concepto }}</strong>
+              <span>{{ formatDate(gasto.fecha_creacion) }}</span>
+            </div>
+            <div class="gasto-monto">
+              -{{ gasto.monto | currency:'$':'symbol':'1.2-2' }}
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="no-gastos-msg">No hay gastos recientes.</div>
+    }
+  </div>
+
+  <div class="bottom-illustration">
+    <div class="illustration-placeholder">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="pill p1"></div>
+      <div class="pill p2"></div>
+    </div>
+    <p>Tu camino hacia la libertad financiera empieza con un pequeño paso.</p>
+  </div>
 </ion-content>
