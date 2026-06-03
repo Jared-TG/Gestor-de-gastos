@@ -7,7 +7,7 @@ import {
 } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { personCircle, qrCodeOutline } from 'ionicons/icons';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
@@ -40,11 +40,14 @@ import { SupabaseService } from '../../services/supabase.service';
 })
 export class NuevogastoComponent implements OnInit {
   gastoForm: FormGroup;
+  modoEdicion = false;
+  gastoId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private supabase: SupabaseService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     addIcons({ personCircle, qrCodeOutline });
 
@@ -58,7 +61,44 @@ export class NuevogastoComponent implements OnInit {
     });
   }
 
-  ngOnInit() { }
+  async ngOnInit() {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.modoEdicion = true;
+      this.gastoId = Number(idParam);
+      await this.cargarGasto(this.gastoId);
+    }
+  }
+
+  async cargarGasto(id: number) {
+    try {
+      const gasto = await this.supabase.obtenerGastoPorId(id);
+      if (gasto) {
+        // Reverse map categoria_id to string
+        let categoria = 'comida';
+        if (gasto.categoria_id === 2) categoria = 'transporte';
+        if (gasto.categoria_id === 3) categoria = 'servicios';
+        if (gasto.categoria_id === 4) categoria = 'entretenimiento';
+        if (gasto.categoria_id === 5) categoria = 'otros';
+
+        // Reverse map metodo_pago_id to string
+        let metodoPago = 'efectivo';
+        if (gasto.metodo_pago_id === 2) metodoPago = 'tarjeta';
+        if (gasto.metodo_pago_id === 3) metodoPago = 'transferencia';
+
+        this.gastoForm.patchValue({
+          concepto: gasto.concepto,
+          monto: gasto.monto,
+          fecha: gasto.fecha_gasto,
+          categoria,
+          metodoPago,
+          notas: gasto.notas || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error cargando gasto para editar:', error);
+    }
+  }
 
   async guardar() {
     if (this.gastoForm.valid) {
@@ -76,17 +116,24 @@ export class NuevogastoComponent implements OnInit {
       if (vals.metodoPago === 'transferencia') metodoId = 3;
 
       try {
-        await this.supabase.insertarGasto({
+        const gastoData = {
           concepto: vals.concepto,
           monto: vals.monto,
           fecha_gasto: vals.fecha,
           categoria_id: categoriaId,
           metodo_pago_id: metodoId,
           notas: vals.notas
-        });
+        };
 
-        console.log('Gasto guardado exitosamente');
-        this.router.navigate(['/home']);
+        if (this.modoEdicion && this.gastoId) {
+          await this.supabase.actualizarGasto(this.gastoId, gastoData);
+          console.log('Gasto actualizado exitosamente');
+        } else {
+          await this.supabase.insertarGasto(gastoData);
+          console.log('Gasto guardado exitosamente');
+        }
+
+        this.router.navigate(['/gastos']);
       } catch (error) {
         console.error('Error al guardar', error);
         alert('Ocurrió un error al guardar el gasto. Revisa la consola para más detalles.');
@@ -97,6 +144,10 @@ export class NuevogastoComponent implements OnInit {
   }
 
   cancelar() {
-    this.router.navigate(['/home']);
+    if (this.modoEdicion) {
+      this.router.navigate(['/gastos']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 }

@@ -40,6 +40,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'nuevogasto/:id',
+        loadComponent: () =>
+          import('./pages/nuevogasto/nuevogasto.component').then(
+            (m) => m.NuevogastoComponent
+          ),
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',

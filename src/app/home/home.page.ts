@@ -8,8 +8,8 @@ import { RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   add, calendarOutline, chevronForwardOutline, notificationsOutline,
-  personCircle, qrCodeOutline, restaurantOutline, trendingUpOutline,
-  walletOutline, cartOutline, busOutline, cafeOutline
+  personCircle, qrCodeOutline, trendingUpOutline,
+  walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../services/supabase.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -64,14 +64,31 @@ export class HomePage {
     return this.getCategoryName(maxId);
   });
 
+  /** Computed: icono de la categoría más frecuente del mes */
+  topCategoriaIcon = computed(() => {
+    const gastos = this.gastosDelMes();
+    if (gastos.length === 0) return 'wallet-outline';
+
+    const conteo = new Map<number, number>();
+    for (const g of gastos) {
+      conteo.set(g.categoria_id, (conteo.get(g.categoria_id) ?? 0) + 1);
+    }
+    let maxId = 1;
+    let maxCount = 0;
+    for (const [id, count] of conteo) {
+      if (count > maxCount) { maxId = id; maxCount = count; }
+    }
+    return this.getIconForCategory(maxId);
+  });
+
   constructor(
     private router: Router,
     private supabase: SupabaseService
   ) {
     addIcons({
       add, calendarOutline, chevronForwardOutline, notificationsOutline,
-      personCircle, restaurantOutline, qrCodeOutline, trendingUpOutline,
-      walletOutline, cartOutline, busOutline, cafeOutline
+      personCircle, qrCodeOutline, trendingUpOutline,
+      walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline
     });
   }
 
@@ -94,9 +111,11 @@ export class HomePage {
 
   getIconForCategory(categoryId: number): string {
     switch (categoryId) {
-      case 1: return 'restaurant-outline';
-      case 2: return 'bus-outline';
-      case 3: return 'cart-outline';
+      case 1: return 'cafe-outline';
+      case 2: return 'car-outline';
+      case 3: return 'receipt-outline';
+      case 4: return 'film-outline';
+      case 5: return 'cog-outline';
       default: return 'wallet-outline';
     }
   }
@@ -106,7 +125,7 @@ export class HomePage {
       case 1: return 'Comida';
       case 2: return 'Transporte';
       case 3: return 'Servicios';
-      case 4: return 'Entretenim.';
+      case 4: return 'Entretenimiento';
       default: return 'Otros';
     }
   }

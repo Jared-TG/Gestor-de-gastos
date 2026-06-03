@@ -2,9 +2,9 @@
   <ion-toolbar>
     <div slot="start" class="profile-group">
       <ion-buttons slot="start">
-        <ion-back-button defaultHref="/home" text=""></ion-back-button>
+        <ion-back-button [defaultHref]="modoEdicion ? '/gastos' : '/home'" text=""></ion-back-button>
       </ion-buttons>
-      <h1 class="profile-title">Nuevo Gasto</h1>
+      <h1 class="profile-title">{{ modoEdicion ? 'Editar Gasto' : 'Nuevo Gasto' }}</h1>
     </div>
     <ion-buttons slot="end">
       <ion-button fill="clear" aria-label="perfil">
@@ -92,7 +92,7 @@
 
     <div class="actions">
       <ion-button expand="block" color="primary" type="submit" class="btn-guardar">
-        Guardar
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
       </ion-button>
       <ion-button expand="block" fill="outline" color="primary" (click)="cancelar()" class="btn-cancelar">
         Cancelar

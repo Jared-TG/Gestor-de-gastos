@@ -72,4 +72,61 @@ export class SupabaseService {
     }
     return data ?? [];
   }
+
+  /** Obtiene todos los gastos ordenados por fecha */
+  async obtenerTodosLosGastos(): Promise<Gasto[]> {
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .select('*')
+      .order('fecha_gasto', { ascending: false });
+
+    if (error) {
+      console.error('Error obteniendo todos los gastos:', error);
+      throw error;
+    }
+    return data ?? [];
+  }
+
+  /** Obtiene un gasto por su ID */
+  async obtenerGastoPorId(id: number): Promise<Gasto | null> {
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Error obteniendo gasto:', error);
+      throw error;
+    }
+    return data;
+  }
+
+  /** Actualiza un gasto existente */
+  async actualizarGasto(id: number, gasto: Partial<Gasto>) {
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .update(gasto)
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Error actualizando gasto:', error);
+      throw error;
+    }
+    return data;
+  }
+
+  /** Elimina un gasto por su ID */
+  async eliminarGasto(id: number) {
+    const { error } = await this.supabase
+      .from('gastos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error eliminando gasto:', error);
+      throw error;
+    }
+  }
 }
