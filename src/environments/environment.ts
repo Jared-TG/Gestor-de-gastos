@@ -6,4 +6,5 @@ export const environment = {
   production: false,
   supabaseurl: 'https://ucboptqvvhbbikqfujve.supabase.co',
   supabasekey: 'sb_publishable_hLCLfWnggZ21PdpQvejAPQ_iMmkcy-y',
+  geminiApiKey: 'AIzaSyCb0jcKCLiTdQDP6X44lGmtzKziKL_OJJw',
 };

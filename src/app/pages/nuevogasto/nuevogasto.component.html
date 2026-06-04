@@ -20,6 +20,15 @@
     <div class="header-image-placeholder"></div>
   </div>
 
+  <!-- Banner datos IA ─────────────────────────────────── -->
+  <div class="ia-banner" *ngIf="desdeIA">
+    <div class="ia-banner-icon">✨</div>
+    <div class="ia-banner-text">
+      <strong>Datos extraídos automáticamente</strong>
+      <span>Gemini IA leyó tu ticket. Revisa y ajusta si es necesario.</span>
+    </div>
+  </div>
+
   <form [formGroup]="gastoForm" (ngSubmit)="guardar()" class="gasto-form">
 
     <div class="input-group">
@@ -99,7 +108,7 @@
       </ion-button>
     </div>
 
-    <div class="scan-banner">
+    <div class="scan-banner" *ngIf="!desdeIA">
       <p>Puedes ingresar el gasto manualmente o escanear un ticket para que la IA lo haga por ti.</p>
       <button type="button" class="scan-button" routerLink="/escanear">
         <ion-icon name="qr-code-outline"></ion-icon> Escanear ticket

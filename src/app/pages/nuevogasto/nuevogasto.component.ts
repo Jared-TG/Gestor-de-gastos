@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import {
   IonButtons, IonButton, IonIcon, IonHeader, IonToolbar, IonContent, IonTitle,
   IonBackButton, IonItem, IonInput, IonSelect, IonSelectOption,
-  IonLabel, IonSegment, IonSegmentButton, IonTextarea, IonRow, IonCol
+  IonLabel, IonSegment, IonSegmentButton, IonTextarea, IonRow, IonCol,
+  ViewDidEnter
 } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { personCircle, qrCodeOutline } from 'ionicons/icons';
@@ -16,6 +18,7 @@ import { SupabaseService } from '../../services/supabase.service';
   styleUrls: ['./nuevogasto.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     IonButtons,
@@ -38,16 +41,19 @@ import { SupabaseService } from '../../services/supabase.service';
     IonCol
   ],
 })
-export class NuevogastoComponent implements OnInit {
+export class NuevogastoComponent implements OnInit, ViewDidEnter {
   gastoForm: FormGroup;
   modoEdicion = false;
   gastoId: number | null = null;
+  /** true cuando se llega desde el escáner con datos de IA */
+  desdeIA = false;
 
   constructor(
     private fb: FormBuilder,
     private supabase: SupabaseService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ personCircle, qrCodeOutline });
 
@@ -67,6 +73,37 @@ export class NuevogastoComponent implements OnInit {
       this.modoEdicion = true;
       this.gastoId = Number(idParam);
       await this.cargarGasto(this.gastoId);
+      return;
+    }
+  }
+
+  /**
+   * ionViewDidEnter se ejecuta cuando la página está completamente visible
+   * y los componentes ion-input ya están inicializados en el DOM.
+   * Aquí es seguro hacer patchValue para que se reflejen los datos.
+   */
+  ionViewDidEnter() {
+    const qp = this.route.snapshot.queryParamMap;
+    if (qp.get('desde_ia') === 'true') {
+      this.desdeIA = true;
+      const montoStr = qp.get('monto');
+
+      // Usar setTimeout para asegurar que los ion-input estén listos
+      setTimeout(() => {
+        this.gastoForm.patchValue({
+          concepto:   qp.get('concepto')   ?? '',
+          monto:      montoStr ? parseFloat(montoStr) : null,
+          fecha:      qp.get('fecha')      ?? new Date().toISOString().split('T')[0],
+          categoria:  qp.get('categoria')  ?? '',
+          metodoPago: qp.get('metodoPago') ?? 'efectivo',
+          notas:      qp.get('notas')      ?? '',
+        });
+
+        // Forzar actualización de validadores y UI
+        this.gastoForm.markAllAsTouched();
+        this.gastoForm.updateValueAndValidity();
+        this.cdr.detectChanges();
+      }, 100);
     }
   }
 
