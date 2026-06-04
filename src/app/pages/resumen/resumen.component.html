@@ -1,9 +1,121 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-title>Resumen</ion-title>
+    <div slot="start" class="profile-group">
+      <ion-button fill="clear" aria-label="perfil" class="ion-no-margin ion-no-padding">
+        <ion-icon slot="icon-only" name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+      <h1 class="profile-title">Gasto Fácil</h1>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" aria-label="Notificaciones">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" [fullscreen]="true">
-  <p>Resumen works!</p>
+<ion-content>
+  <!-- Page Title -->
+  <div class="page-header">
+    <h2>Resumen</h2>
+    <span class="page-subtitle">Análisis de tus finanzas este mes.</span>
+  </div>
+
+  <!-- Total Accumulated Card -->
+  <div class="total-card">
+    <span class="total-label">TOTAL ACUMULADO</span>
+    <strong class="total-amount">{{ totalAcumulado() | currency:'$':'symbol':'1.2-2' }}</strong>
+    <div class="total-badge" [class.decrease]="!gastoAumento()">
+      <ion-icon [name]="gastoAumento() ? 'trending-up-outline' : 'trending-down-outline'"></ion-icon>
+      <span>{{ cambioMensual() | number:'1.0-0' }}% {{ gastoAumento() ? 'más' : 'menos' }} que el mes pasado</span>
+    </div>
+  </div>
+
+  <!-- Donut Chart Section -->
+  <div class="chart-section">
+    <div class="donut-container">
+      <svg viewBox="0 0 100 100" class="donut-chart">
+        @for (segment of donutSegments().segments; track segment.color) {
+          <circle
+            cx="50" cy="50" r="40"
+            fill="none"
+            [attr.stroke]="segment.color"
+            stroke-width="14"
+            [attr.stroke-dasharray]="segment.length + ' ' + (donutSegments().circumference - segment.length)"
+            [attr.stroke-dashoffset]="-segment.offset"
+            stroke-linecap="butt"
+            class="donut-segment"
+          />
+        }
+        @if (donutSegments().segments.length === 0) {
+          <circle
+            cx="50" cy="50" r="40"
+            fill="none"
+            stroke="#e5e7eb"
+            stroke-width="14"
+          />
+        }
+      </svg>
+      <div class="donut-center-text">
+        <span class="donut-label">Gastos</span>
+        <strong class="donut-value">100%</strong>
+      </div>
+    </div>
+
+    <!-- Top Category Badge -->
+    @if (topCategoria(); as top) {
+      <div class="top-category-badge">
+        <div class="top-dot" [style.background]="top.color"></div>
+        <span>Categoría con más gastos:</span>
+        <strong>{{ top.nombre }} ({{ top.porcentaje | percent:'1.0-0' }})</strong>
+      </div>
+    }
+  </div>
+
+  <!-- Category Breakdown Section -->
+  <div class="breakdown-section">
+    <h3 class="breakdown-title">DESGLOSE POR CATEGORÍA</h3>
+
+    <div class="category-list">
+      @for (cat of categoriasResumen(); track cat.id) {
+        <div class="category-row">
+          <div class="category-icon-wrapper" [style.background]="cat.color + '18'">
+            <ion-icon [name]="cat.icono" [style.color]="cat.color"></ion-icon>
+          </div>
+          <div class="category-info">
+            <strong class="category-name">{{ cat.nombre }}</strong>
+            <span class="category-percent">{{ cat.porcentaje | percent:'1.0-0' }} del total</span>
+          </div>
+          <span class="category-amount">{{ cat.total | currency:'$':'symbol':'1.2-2' }}</span>
+        </div>
+      }
+
+      @if (categoriasResumen().length === 0) {
+        <div class="no-data">
+          <ion-icon name="stats-chart-outline" class="no-data-icon"></ion-icon>
+          <p>No hay gastos este mes</p>
+          <span>Agrega gastos para ver tu resumen</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Motivational Tip -->
+  @if (categoriasResumen().length > 0) {
+    <div class="tip-card">
+      <div class="tip-icon-wrapper">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <div class="tip-content">
+        <strong>¡Vas por buen camino!</strong>
+        @if (topCategoria(); as top) {
+          <p>
+            Tu categoría principal es <strong>{{ top.nombre }}</strong> con el
+            {{ top.porcentaje | percent:'1.0-0' }} de tus gastos.
+            Mantén el enfoque en tu categoría de {{ top.nombre }}.
+          </p>
+        }
+      </div>
+    </div>
+  }
 </ion-content>

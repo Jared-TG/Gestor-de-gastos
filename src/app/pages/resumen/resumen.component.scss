@@ -1,0 +1,364 @@
+/* ─── Header ─── */
+.profile-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding-bottom: 1rem;
+}
+
+.profile-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  color: #0456C5;
+}
+
+.profile-icon {
+  font-size: 1.75rem;
+}
+
+/* ─── Content ─── */
+ion-content {
+  --background: #f5f7fb;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.5rem;
+  --padding-bottom: 5rem;
+}
+
+/* ─── Page Header ─── */
+.page-header {
+  padding: 0.5rem 0.25rem 0;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+  }
+
+  .page-subtitle {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    color: #9ca3af;
+    font-weight: 400;
+  }
+}
+
+/* ─── Total Accumulated Card ─── */
+.total-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.25rem;
+  border-radius: 1.25rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+  box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
+  animation: cardSlideIn 0.5s ease-out;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.total-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.total-amount {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-top: 0.25rem;
+  letter-spacing: -0.025rem;
+}
+
+.total-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 999rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  width: fit-content;
+
+  ion-icon {
+    font-size: 0.875rem;
+  }
+
+  &.decrease {
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* ─── Donut Chart Section ─── */
+.chart-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.donut-container {
+  position: relative;
+  width: 10rem;
+  height: 10rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-chart {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut-segment {
+  transition: stroke-dasharray 0.6s ease, stroke-dashoffset 0.6s ease;
+}
+
+.donut-center-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.donut-label {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.donut-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* ─── Top Category Badge ─── */
+.top-category-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.875rem;
+  background: #f0f4ff;
+  font-size: 0.75rem;
+  color: #4b5563;
+  width: 100%;
+
+  .top-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+
+  strong {
+    color: #1f2937;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* ─── Category Breakdown ─── */
+.breakdown-section {
+  margin-top: 1.5rem;
+}
+
+.breakdown-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin: 0 0 1rem 0.25rem;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  background: #ffffff;
+  border-radius: 1.125rem;
+  padding: 0.875rem 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:active {
+    transform: scale(0.985);
+  }
+}
+
+.category-icon-wrapper {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  border-radius: 0.875rem;
+  display: grid;
+  place-items: center;
+
+  ion-icon {
+    font-size: 1.25rem;
+  }
+}
+
+.category-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.category-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.category-percent {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.category-amount {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+/* ─── No Data State ─── */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+  .no-data-icon {
+    font-size: 3rem;
+    color: #d1d5db;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin: 0 0 0.25rem;
+  }
+
+  span {
+    font-size: 0.8125rem;
+    color: #9ca3af;
+  }
+}
+
+/* ─── Motivational Tip Card ─── */
+.tip-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem 1.125rem;
+  border-radius: 1.125rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border: 1.5px solid #bbf7d0;
+  animation: tipFadeIn 0.6s ease-out 0.3s both;
+}
+
+@keyframes tipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tip-icon-wrapper {
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  border-radius: 0.75rem;
+  background: #dcfce7;
+  display: grid;
+  place-items: center;
+
+  ion-icon {
+    font-size: 1.25rem;
+    color: #16a34a;
+  }
+}
+
+.tip-content {
+  flex: 1;
+  min-width: 0;
+
+  > strong {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #15803d;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: #4b5563;
+    margin: 0;
+
+    strong {
+      color: #15803d;
+      font-weight: 600;
+    }
+  }
+}
