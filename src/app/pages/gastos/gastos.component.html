@@ -1,9 +1,105 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-title>Gastos</ion-title>
+    <div slot="start" class="profile-group">
+      <ion-button fill="clear" aria-label="perfil" class="ion-no-margin ion-no-padding">
+        <ion-icon slot="icon-only" name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+      <h1 class="profile-title">Gasto Fácil</h1>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" aria-label="Buscar">
+        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" aria-label="Más opciones">
+        <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" [fullscreen]="true">
-  <p>Gastos works!</p>
+<ion-fab vertical="bottom" horizontal="end">
+  <ion-fab-button (click)="agregarGasto()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<ion-content>
+  <!-- Page Title -->
+  <div class="page-title">
+    <h2>Mis gastos</h2>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <ion-searchbar
+      placeholder="¿En qué gastaste hoy?"
+      [debounce]="300"
+      (ionInput)="onBuscar($event)"
+      mode="ios"
+      class="custom-searchbar"
+    ></ion-searchbar>
+  </div>
+
+  <!-- Category Filter Chips -->
+  <div class="filter-chips">
+    @for (filtro of filtrosCategoria; track filtro.id) {
+      <button
+        class="filter-chip"
+        [class.active]="categoriaFiltro() === filtro.id"
+        (click)="seleccionarCategoria(filtro.id)"
+      >
+        @if (filtro.id === 0) {
+          <ion-icon name="calendar-outline" class="chip-icon"></ion-icon>
+        }
+        {{ filtro.nombre }}
+      </button>
+    }
+  </div>
+
+  <!-- Gastos List -->
+  <div class="gastos-list">
+    @if (gastosFiltrados().length > 0) {
+      @for (gasto of gastosFiltrados(); track gasto.id) {
+        <div class="gasto-card">
+          <div class="gasto-icon-wrapper" [style.background]="getCategoryColor(gasto.categoria_id) + '18'">
+            <ion-icon
+              [name]="getIconForCategory(gasto.categoria_id)"
+              [style.color]="getCategoryColor(gasto.categoria_id)"
+            ></ion-icon>
+          </div>
+
+          <div class="gasto-info">
+            <div class="gasto-top-row">
+              <strong class="gasto-concepto">{{ gasto.concepto }}</strong>
+              <span class="gasto-monto">{{ gasto.monto | currency:'$':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="gasto-bottom-row">
+              <span
+                class="gasto-categoria-badge"
+                [style.background]="getCategoryColor(gasto.categoria_id) + '18'"
+                [style.color]="getCategoryColor(gasto.categoria_id)"
+              >
+                {{ getCategoryName(gasto.categoria_id) }}
+              </span>
+              <span class="gasto-fecha">{{ formatDate(gasto.fecha_gasto) }}</span>
+              <div class="gasto-actions">
+                <button class="action-btn edit-btn" (click)="editarGasto(gasto)" aria-label="Editar gasto">
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
+                <button class="action-btn delete-btn" (click)="confirmarEliminar(gasto)" aria-label="Eliminar gasto">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="no-gastos">
+        <ion-icon name="wallet-outline" class="no-gastos-icon"></ion-icon>
+        <p>No se encontraron gastos</p>
+        <span>Agrega un nuevo gasto con el botón +</span>
+      </div>
+    }
+  </div>
 </ion-content>

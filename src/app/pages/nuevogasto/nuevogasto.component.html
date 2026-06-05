@@ -2,9 +2,9 @@
   <ion-toolbar>
     <div slot="start" class="profile-group">
       <ion-buttons slot="start">
-        <ion-back-button defaultHref="/home" text=""></ion-back-button>
+        <ion-back-button [defaultHref]="modoEdicion ? '/gastos' : '/home'" text=""></ion-back-button>
       </ion-buttons>
-      <ion-title class="profile-title">Nuevo Gasto</ion-title>
+      <h1 class="profile-title">{{ modoEdicion ? 'Editar Gasto' : 'Nuevo Gasto' }}</h1>
     </div>
     <ion-buttons slot="end">
       <ion-button fill="clear" aria-label="perfil">
@@ -15,21 +15,28 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  
+
   <div class="header-image-container">
     <div class="header-image-placeholder"></div>
   </div>
 
+  <!-- Banner datos IA ─────────────────────────────────── -->
+  @if (desdeIA) {
+    <div class="ia-banner">
+      <div class="ia-banner-icon">✨</div>
+      <div class="ia-banner-text">
+        <strong>Datos extraídos automáticamente</strong>
+        <span>Gemini IA leyó tu ticket. Revisa y ajusta si es necesario.</span>
+      </div>
+    </div>
+  }
+
   <form [formGroup]="gastoForm" (ngSubmit)="guardar()" class="gasto-form">
-    
+
     <div class="input-group">
       <div class="custom-label">Concepto</div>
       <div class="input-wrapper">
-        <ion-input 
-          formControlName="concepto" 
-          placeholder="¿En qué gastaste hoy?"
-          class="custom-input">
-        </ion-input>
+        <ion-input formControlName="concepto" placeholder="¿En qué gastaste hoy?" class="custom-input"></ion-input>
       </div>
     </div>
 
@@ -37,12 +44,7 @@
       <div class="custom-label">Monto</div>
       <div class="input-wrapper monto-wrapper">
         <span class="currency-symbol">$</span>
-        <ion-input 
-          formControlName="monto" 
-          type="number"
-          placeholder="0.00"
-          class="custom-input monto-input">
-        </ion-input>
+        <ion-input formControlName="monto" type="number" placeholder="0.00" class="custom-input monto-input"></ion-input>
       </div>
     </div>
 
@@ -51,11 +53,7 @@
         <div class="input-group">
           <div class="custom-label">Fecha</div>
           <div class="input-wrapper">
-            <ion-input 
-              type="date"
-              formControlName="fecha"
-              class="custom-input">
-            </ion-input>
+            <ion-input type="date" formControlName="fecha" class="custom-input"></ion-input>
           </div>
         </div>
       </ion-col>
@@ -63,10 +61,7 @@
         <div class="input-group">
           <div class="custom-label">Categoría</div>
           <div class="input-wrapper select-wrapper">
-            <ion-select 
-              formControlName="categoria"
-              placeholder="Seleccionar"
-              interface="popover"
+            <ion-select formControlName="categoria" placeholder="Seleccionar" interface="popover"
               class="custom-input custom-select">
               <ion-select-option value="comida">Comida</ion-select-option>
               <ion-select-option value="transporte">Transporte</ion-select-option>
@@ -82,22 +77,17 @@
     <div class="input-group">
       <div class="custom-label">Método de pago</div>
       <div class="payment-methods">
-        <button type="button" 
-                class="payment-chip" 
-                [class.active]="gastoForm.get('metodoPago')?.value === 'efectivo'"
-                (click)="gastoForm.get('metodoPago')?.setValue('efectivo')">
+        <button type="button" class="payment-chip" [class.active]="gastoForm.get('metodoPago')?.value === 'efectivo'"
+          (click)="gastoForm.get('metodoPago')?.setValue('efectivo')">
           Efectivo
         </button>
-        <button type="button" 
-                class="payment-chip" 
-                [class.active]="gastoForm.get('metodoPago')?.value === 'tarjeta'"
-                (click)="gastoForm.get('metodoPago')?.setValue('tarjeta')">
+        <button type="button" class="payment-chip" [class.active]="gastoForm.get('metodoPago')?.value === 'tarjeta'"
+          (click)="gastoForm.get('metodoPago')?.setValue('tarjeta')">
           Tarjeta
         </button>
-        <button type="button" 
-                class="payment-chip" 
-                [class.active]="gastoForm.get('metodoPago')?.value === 'transferencia'"
-                (click)="gastoForm.get('metodoPago')?.setValue('transferencia')">
+        <button type="button" class="payment-chip"
+          [class.active]="gastoForm.get('metodoPago')?.value === 'transferencia'"
+          (click)="gastoForm.get('metodoPago')?.setValue('transferencia')">
           Transferencia
         </button>
       </div>
@@ -106,30 +96,28 @@
     <div class="input-group">
       <div class="custom-label">Notas</div>
       <div class="input-wrapper text-area-wrapper">
-        <ion-textarea 
-          formControlName="notas"
-          placeholder="Agrega más detalles aquí..."
-          rows="4"
-          class="custom-input custom-textarea">
-        </ion-textarea>
+        <ion-textarea formControlName="notas" placeholder="Agrega más detalles aquí..." rows="4"
+          class="custom-input custom-textarea"></ion-textarea>
       </div>
     </div>
 
     <div class="actions">
       <ion-button expand="block" color="primary" type="submit" class="btn-guardar">
-        Guardar
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
       </ion-button>
       <ion-button expand="block" fill="outline" color="primary" (click)="cancelar()" class="btn-cancelar">
         Cancelar
       </ion-button>
     </div>
 
-    <div class="scan-banner">
-      <p>Puedes ingresar el gasto manualmente o escanear un ticket para que la IA lo haga por ti.</p>
-      <button type="button" class="scan-button">
-        <ion-icon name="qr-code-outline"></ion-icon> Escanear ticket
-      </button>
-    </div>
+    @if (!desdeIA) {
+      <div class="scan-banner">
+        <p>Puedes ingresar el gasto manualmente o escanear un ticket para que la IA lo haga por ti.</p>
+        <button type="button" class="scan-button" routerLink="/escanear">
+          <ion-icon name="qr-code-outline"></ion-icon> Escanear ticket
+        </button>
+      </div>
+    }
 
   </form>
 </ion-content>

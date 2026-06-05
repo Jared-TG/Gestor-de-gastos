@@ -9,50 +9,136 @@
 
 <ion-content [fullscreen]="true">
   <div class="main-layout-container">
-    
+
+    <!-- ── VIEWFINDER ─────────────────────────────────── -->
     <div class="viewfinder-wrapper">
-      <div id="scannerZone" #scannerZone class="camera-canvas-box"></div>
-      
-      <ion-badge color="dark" class="instruction-badge">
-        Alinea el ticket con el recuadro
-      </ion-badge>
+      <div id="scannerZone" #scannerZone class="camera-canvas-box">
+
+        <!-- Imagen capturada superpuesta sobre la vista de cámara -->
+        @if (capturedImageSrc) {
+          <div class="captured-overlay">
+            <img [src]="capturedImageSrc" alt="Foto capturada" class="captured-img" />
+            <div class="captured-badge">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              Foto lista
+            </div>
+          </div>
+        }
+
+        <!-- Esquinas del visor cuando NO hay foto -->
+        @if (!capturedImageSrc) {
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+        }
+      </div>
+
+      @if (!capturedImageSrc) {
+        <ion-badge color="dark" class="instruction-badge">
+          Alinea el ticket con el recuadro
+        </ion-badge>
+      } @else {
+        <ion-badge color="success" class="instruction-badge">
+          Ticket capturado · Pulsa "Analizar con IA"
+        </ion-badge>
+      }
     </div>
 
+    <!-- ── MENSAJES DE ESTADO ──────────────────────────── -->
+    @if (successMsg) {
+      <div class="status-msg success-msg">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        {{ successMsg }}
+      </div>
+    }
+    @if (errorMsg) {
+      <div class="status-msg error-msg">
+        <ion-icon name="alert-circle"></ion-icon>
+        {{ errorMsg }}
+      </div>
+    }
+
+    <!-- ── CONTROLES ───────────────────────────────────── -->
     <ion-card class="controls-card ion-no-margin">
       <ion-card-content class="controls-content">
-        
+
+        <!-- Botones principales -->
         <div class="action-buttons-row">
-          <ion-button expand="block" color="primary" class="action-btn">
+          <ion-button
+            expand="block"
+            color="primary"
+            class="action-btn"
+            [disabled]="!!capturedImageSrc || isAnalyzing"
+            (click)="tomarFoto()">
             <ion-icon slot="start" name="camera"></ion-icon>
             Tomar foto
           </ion-button>
-          
-          <ion-button expand="block" fill="light" class="action-btn gallery-btn">
+
+          <ion-button
+            expand="block"
+            fill="light"
+            class="action-btn gallery-btn"
+            [disabled]="!!capturedImageSrc || isAnalyzing"
+            (click)="seleccionarDeGaleria()">
             <ion-icon slot="start" name="image" color="primary"></ion-icon>
             Galería
           </ion-button>
         </div>
 
-        <ion-item lines="none" class="recent-capture-item">
-          <ion-thumbnail slot="start" class="mini-preview-thumbnail">
-            <div class="placeholder-thumb"></div>
-          </ion-thumbnail>
-          
-          <ion-label>
-            <h3>Captura reciente</h3>
-            <p>Ticket_20231024_123.jpg</p>
-          </ion-label>
-          
-          <ion-button slot="end" fill="clear" color="danger" class="ion-no-margin">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-button>
-        </ion-item>
+        <!-- Previsualización de la captura reciente -->
+        @if (capturedImageSrc) {
+          <ion-item lines="none" class="recent-capture-item">
+            <ion-thumbnail slot="start" class="mini-preview-thumbnail">
+              <img [src]="capturedImageSrc" alt="Miniatura ticket" />
+            </ion-thumbnail>
 
-        <ion-button expand="block" class="btn-ai-analyze">
-          <ion-icon slot="start" name="sparkles"></ion-icon>
-          Analizar con IA
+            <ion-label>
+              <h3>Captura lista</h3>
+              <p>Imagen capturada correctamente</p>
+            </ion-label>
+
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              class="ion-no-margin"
+              [disabled]="isAnalyzing"
+              (click)="descartarFoto()">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-button>
+          </ion-item>
+        } @else {
+          <!-- Placeholder cuando no hay captura -->
+          <ion-item lines="none" class="recent-capture-item placeholder-item">
+            <ion-thumbnail slot="start" class="mini-preview-thumbnail">
+              <div class="placeholder-thumb">
+                <ion-icon name="image"></ion-icon>
+              </div>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>Sin captura</h3>
+              <p>Toma una foto para comenzar</p>
+            </ion-label>
+          </ion-item>
+        }
+
+        <!-- Botón analizar con IA -->
+        <ion-button
+          expand="block"
+          class="btn-ai-analyze"
+          [disabled]="!capturedImageSrc || isAnalyzing"
+          (click)="analizarConIA()">
+
+          @if (!isAnalyzing) {
+            <ion-icon slot="start" name="sparkles"></ion-icon>
+            Analizar con IA
+          } @else {
+            <ion-spinner slot="start" name="crescent" class="btn-spinner"></ion-spinner>
+            Analizando ticket…
+          }
         </ion-button>
-        
+
         <p class="disclaimer-text">
           Nuestra IA detectará automáticamente montos, fechas y conceptos.
         </p>
@@ -60,4 +146,16 @@
     </ion-card>
 
   </div>
+
+  <!-- ── OVERLAY DE CARGA ────────────────────────────── -->
+  @if (isAnalyzing) {
+    <div class="analyzing-overlay">
+      <div class="analyzing-card">
+        <ion-spinner name="crescent" class="overlay-spinner"></ion-spinner>
+        <p class="overlay-title">Analizando ticket…</p>
+        <p class="overlay-sub">Gemini IA está leyendo los datos</p>
+      </div>
+    </div>
+  }
+
 </ion-content>

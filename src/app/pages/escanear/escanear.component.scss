@@ -1,10 +1,10 @@
 ion-content {
-  --background: #f8f9fa; 
+  --background: #f8f9fa;
 }
 
 ion-toolbar {
   --background: #ffffff;
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
 
   .header-container {
     display: flex;
@@ -16,7 +16,7 @@ ion-toolbar {
       font-weight: 800;
       color: #0d6efd;
       font-size: 1.2rem;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.01875rem;
     }
     .page-title {
       font-size: 0.9rem;
@@ -29,7 +29,7 @@ ion-toolbar {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px;
+  padding: 1rem;
   justify-content: space-between;
 }
 
@@ -40,21 +40,21 @@ ion-toolbar {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 
   .camera-canvas-box {
     width: 88%;
-    max-width: 360px;
-    height: 420px;
+    max-width: 22.5rem;
+    height: 26.25rem;
     background: #000000;
-    border: 3px solid #00f0ff;
-    border-radius: 40px;
-    box-shadow: 0 12px 32px rgba(0, 240, 255, 0.3);
+    border: 0.1875rem solid #00f0ff;
+    border-radius: 2.5rem;
+    box-shadow: 0 0.75rem 2rem rgba(0, 240, 255, 0.3);
     position: relative;
     overflow: hidden;
 
-    /* Lock down incoming native plugin elements to container bounds */
-    video, data-box, div {
+    /* Solo contenemos el video del plugin nativo — NO aplicamos a nuestros divs */
+    video {
       width: 100% !important;
       height: 100% !important;
       object-fit: cover !important;
@@ -62,50 +62,62 @@ ion-toolbar {
       inset: 0 !important;
       z-index: 1 !important;
     }
+
+    /* Overlay de imagen capturada — siempre por encima de la cámara */
+    .captured-overlay {
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 20 !important;
+    }
+
+    /* Guías de esquina — por encima del feed de cámara, bajo el overlay */
+    .corner {
+      z-index: 10 !important;
+    }
   }
 
   .instruction-badge {
-    margin-top: 18px;
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --padding-top: 8px;
-    --padding-bottom: 8px;
+    margin-top: 1.125rem;
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
     font-size: 0.85rem;
     font-weight: 500;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     background: rgba(33, 37, 41, 0.85);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(0.25rem);
   }
 }
 
 /* Dashboard Controls Configuration */
 .controls-card {
   background: #ffffff;
-  border-radius: 28px;
-  --box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-  
+  border-radius: 1.75rem;
+  --box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.04);
+
   .controls-content {
-    padding: 20px;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
   }
 }
 
 .action-buttons-row {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
 
   .action-btn {
     flex: 1;
-    --border-radius: 16px;
+    --border-radius: 1rem;
     font-weight: 600;
     font-size: 0.95rem;
     margin: 0;
-    
+
     &::part(native) {
-      padding-top: 14px;
-      padding-bottom: 14px;
+      padding-top: 0.875rem;
+      padding-bottom: 0.875rem;
     }
   }
 
@@ -118,23 +130,16 @@ ion-toolbar {
 /* Recent Captured Asset Component Block */
 .recent-capture-item {
   --background: #f8f9fa;
-  --border-radius: 18px;
-  border: 1px solid #e9ecef;
-  --inner-padding-end: 8px;
-  --padding-start: 12px;
+  --border-radius: 1.125rem;
+  border: 0.0625rem solid #e9ecef;
+  --inner-padding-end: 0.5rem;
+  --padding-start: 0.75rem;
 
   .mini-preview-thumbnail {
-    width: 40px;
-    height: 40px;
+    width: 2.5rem;
+    height: 2.5rem;
     margin-top: 0;
     margin-bottom: 0;
-
-    .placeholder-thumb {
-      width: 100%;
-      height: 100%;
-      background: #adb5bd;
-      border-radius: 8px;
-    }
   }
 
   ion-label {
@@ -142,7 +147,7 @@ ion-toolbar {
       font-size: 0.9rem;
       font-weight: 600;
       color: #212529;
-      margin-bottom: 2px;
+      margin-bottom: 0.125rem;
     }
     p {
       font-size: 0.75rem;
@@ -156,14 +161,18 @@ ion-toolbar {
   margin: 0;
   --background: #50fabb;
   --color: #053721;
-  --border-radius: 18px;
+  --border-radius: 1.125rem;
   font-weight: 700;
   font-size: 1rem;
-  box-shadow: 0 4px 14px rgba(80, 250, 187, 0.35);
-  
+  box-shadow: 0 0.25rem 0.875rem rgba(80, 250, 187, 0.35);
+
   &::part(native) {
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  &[disabled]::part(native) {
+    opacity: 0.45;
   }
 }
 
@@ -172,6 +181,166 @@ ion-toolbar {
   color: #6c757d;
   text-align: center;
   margin: 0;
-  padding: 0 4px;
+  padding: 0 0.25rem;
   line-height: 1.3;
+}
+
+/* ── Corner guides del visor ────────────────────────── */
+.corner {
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-color: #00f0ff;
+  border-style: solid;
+  z-index: 10;
+  border-radius: 0.25rem;
+
+  &.tl { top: 1rem; left: 1rem; border-width: 0.1875rem 0 0 0.1875rem; }
+  &.tr { top: 1rem; right: 1rem; border-width: 0.1875rem 0.1875rem 0 0; }
+  &.bl { bottom: 1rem; left: 1rem; border-width: 0 0 0.1875rem 0.1875rem; }
+  &.br { bottom: 1rem; right: 1rem; border-width: 0 0.1875rem 0.1875rem 0; }
+}
+
+/* ── Imagen capturada superpuesta ─────────────────────── */
+.captured-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+
+  .captured-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2.3rem;
+  }
+
+  .captured-badge {
+    position: relative;
+    z-index: 21;
+    margin-bottom: 1rem;
+    background: rgba(25, 135, 84, 0.9);
+    color: #fff;
+    padding: 0.35rem 0.875rem;
+    border-radius: 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* ── Miniatura con imagen real ───────────────────────── */
+.mini-preview-thumbnail {
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.5rem;
+  }
+}
+
+/* ── Placeholder con ícono ───────────────────────────── */
+.placeholder-thumb {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #e9ecef;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 1.2rem;
+    color: #adb5bd;
+  }
+}
+
+/* ── Placeholder item ────────────────────────────────── */
+.placeholder-item { opacity: 0.7; }
+
+/* ── Mensajes de estado ──────────────────────────────── */
+.status-msg {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+
+  ion-icon { font-size: 1rem; }
+
+  &.success-msg {
+    background: rgba(25, 135, 84, 0.12);
+    color: #146c43;
+    border: 1px solid rgba(25, 135, 84, 0.25);
+  }
+  &.error-msg {
+    background: rgba(220, 53, 69, 0.1);
+    color: #b02a37;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+  }
+}
+
+/* ── Spinner dentro del botón ────────────────────────── */
+.btn-spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: 0.4rem;
+}
+
+/* ── Overlay de análisis ─────────────────────────────── */
+.analyzing-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s ease;
+
+  .analyzing-card {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 1.5rem;
+    padding: 2rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+
+    .overlay-spinner {
+      width: 2.5rem;
+      height: 2.5rem;
+      color: #0d6efd;
+    }
+    .overlay-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #212529;
+      margin: 0;
+    }
+    .overlay-sub {
+      font-size: 0.82rem;
+      color: #6c757d;
+      margin: 0;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
