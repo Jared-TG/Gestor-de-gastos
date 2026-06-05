@@ -1,5 +1,5 @@
 import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonNote,
   IonCard, IonCardContent, IonButton, IonIcon,
@@ -19,7 +19,7 @@ import { GeminiService } from '../../services/gemini.service';
   styleUrls: ['./escanear.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
+
     IonHeader, IonToolbar, IonContent,
     IonCard, IonCardContent, IonButton, IonIcon,
     IonItem, IonLabel, IonThumbnail, IonBadge,
@@ -174,12 +174,24 @@ export class EscanearComponent implements AfterViewInit, OnDestroy {
     try {
       const ticketData = await this.gemini.analizarTicket(this.capturedImage);
 
+      // Si la fecha extraída es de un mes anterior, usar la fecha de hoy
+      // para que el gasto se refleje en el dashboard del mes actual
+      const hoy = new Date();
+      const fechaTicket = new Date(ticketData.fecha + 'T00:00:00');
+      const esDelMesActual =
+        fechaTicket.getFullYear() === hoy.getFullYear() &&
+        fechaTicket.getMonth() === hoy.getMonth();
+
+      const fechaFinal = esDelMesActual
+        ? ticketData.fecha
+        : hoy.toISOString().split('T')[0];
+
       // Navegar a /nuevogasto pasando los datos como query params
       this.router.navigate(['/nuevogasto'], {
         queryParams: {
           concepto:   ticketData.concepto,
           monto:      ticketData.monto ?? '',
-          fecha:      ticketData.fecha,
+          fecha:      fechaFinal,
           categoria:  ticketData.categoria,
           metodoPago: ticketData.metodoPago,
           notas:      ticketData.notas,

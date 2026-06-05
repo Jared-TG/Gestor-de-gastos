@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import {
   IonButtons, IonButton, IonIcon, IonHeader, IonToolbar, IonContent, IonTitle,
-  IonBackButton, IonItem, IonInput, IonSelect, IonSelectOption,
-  IonLabel, IonSegment, IonSegmentButton, IonTextarea, IonRow, IonCol,
+  IonBackButton, IonInput, IonSelect, IonSelectOption,
+  IonTextarea, IonRow, IonCol,
   ViewDidEnter
 } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
@@ -18,7 +18,6 @@ import { SupabaseService } from '../../services/supabase.service';
   styleUrls: ['./nuevogasto.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     IonButtons,
@@ -29,13 +28,9 @@ import { SupabaseService } from '../../services/supabase.service';
     IonContent,
     IonTitle,
     IonBackButton,
-    IonItem,
     IonInput,
     IonSelect,
     IonSelectOption,
-    IonLabel,
-    IonSegment,
-    IonSegmentButton,
     IonTextarea,
     IonRow,
     IonCol
