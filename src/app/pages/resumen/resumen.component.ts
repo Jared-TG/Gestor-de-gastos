@@ -8,10 +8,15 @@ import {
   personCircle, notificationsOutline, statsChartOutline,
   cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
   walletOutline, trendingUpOutline, trendingDownOutline,
-  checkmarkCircleOutline, arrowUpOutline
+  checkmarkCircleOutline, arrowUpOutline, pricetagOutline,
+  restaurantOutline, medkitOutline, schoolOutline, homeOutline,
+  airplaneOutline, cartOutline, giftOutline, fitnessOutline,
+  pawOutline, constructOutline, musicalNotesOutline, bookOutline,
+  busOutline, flashOutline, gameControllerOutline, layersOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../../services/supabase.service';
 import { FiltroMesService } from '../../services/filtro-mes.service';
+import { CategoriasService } from '../../services/categorias.service';
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 
 export interface CategoriaResumen {
@@ -65,19 +70,13 @@ export class ResumenComponent {
   /** Number of expenses this month */
   conteoGastos = computed(() => this.gastosDelMes().length);
 
-  /** Category breakdown with percentages */
+  /** Category breakdown with percentages — now dynamic from CategoriasService */
   categoriasResumen = computed<CategoriaResumen[]>(() => {
     const gastos = this.gastosDelMes();
     const total = this.totalAcumulado();
     if (total === 0) return [];
 
-    const categorias = [
-      { id: 1, nombre: 'Comida', icono: 'cafe-outline', color: '#e74c3c' },
-      { id: 2, nombre: 'Transporte', icono: 'car-outline', color: '#3498db' },
-      { id: 3, nombre: 'Servicios', icono: 'receipt-outline', color: '#f39c12' },
-      { id: 4, nombre: 'Entretenimiento', icono: 'film-outline', color: '#2ecc71' },
-      { id: 5, nombre: 'Otros', icono: 'cog-outline', color: '#9b59b6' },
-    ];
+    const categorias = this.categoriasService.categorias();
 
     return categorias
       .map(cat => {
@@ -85,7 +84,10 @@ export class ResumenComponent {
           .filter(g => g.categoria_id === cat.id)
           .reduce((sum, g) => sum + g.monto, 0);
         return {
-          ...cat,
+          id: cat.id!,
+          nombre: cat.nombre,
+          icono: cat.icono,
+          color: cat.color,
           total: totalCat,
           porcentaje: totalCat / total,
         };
@@ -121,13 +123,18 @@ export class ResumenComponent {
 
   constructor(
     private supabase: SupabaseService,
-    public filtroMes: FiltroMesService
+    public filtroMes: FiltroMesService,
+    private categoriasService: CategoriasService
   ) {
     addIcons({
       personCircle, notificationsOutline, statsChartOutline,
       cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
       walletOutline, trendingUpOutline, trendingDownOutline,
-      checkmarkCircleOutline, arrowUpOutline
+      checkmarkCircleOutline, arrowUpOutline, pricetagOutline,
+      restaurantOutline, medkitOutline, schoolOutline, homeOutline,
+      airplaneOutline, cartOutline, giftOutline, fitnessOutline,
+      pawOutline, constructOutline, musicalNotesOutline, bookOutline,
+      busOutline, flashOutline, gameControllerOutline, layersOutline
     });
 
     // Recargar datos automáticamente cuando cambie el mes
@@ -139,6 +146,7 @@ export class ResumenComponent {
   }
 
   async ionViewWillEnter() {
+    await this.categoriasService.cargarCategorias();
     await this.cargarDatos();
   }
 
@@ -158,7 +166,6 @@ export class ResumenComponent {
       this.gastosDelMes.set(gastosActuales);
       this.gastosDelMesPasado.set(gastosPasados);
     } catch (error) {
-      // Log only a generic message, not the full error object
       console.error('Error al cargar datos del resumen');
     }
   }

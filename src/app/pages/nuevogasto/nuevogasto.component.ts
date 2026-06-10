@@ -5,12 +5,13 @@ import {
   IonButtons, IonButton, IonIcon, IonHeader, IonToolbar, IonContent, IonTitle,
   IonBackButton, IonInput, IonSelect, IonSelectOption,
   IonTextarea, IonRow, IonCol,
-  ViewDidEnter
+  ViewDidEnter, AlertController
 } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
-import { personCircle, qrCodeOutline } from 'ionicons/icons';
+import { personCircle, qrCodeOutline, addCircleOutline } from 'ionicons/icons';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
+import { CategoriasService } from '../../services/categorias.service';
 
 @Component({
   selector: 'app-nuevogasto',
@@ -48,21 +49,26 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
     private supabase: SupabaseService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertCtrl: AlertController,
+    public categoriasService: CategoriasService
   ) {
-    addIcons({ personCircle, qrCodeOutline });
+    addIcons({ personCircle, qrCodeOutline, addCircleOutline });
 
     this.gastoForm = this.fb.group({
       concepto: ['', Validators.required],
       monto: [null, [Validators.required, Validators.min(0.01)]],
       fecha: [new Date().toISOString().split('T')[0], Validators.required],
-      categoria: ['', Validators.required],
+      categoria: [null, Validators.required],  // ahora es un ID numérico
       metodoPago: ['efectivo', Validators.required],
       notas: ['']
     });
   }
 
   async ngOnInit() {
+    // Cargar categorías desde Supabase
+    await this.categoriasService.cargarCategorias();
+
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.modoEdicion = true;
@@ -83,13 +89,17 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
       this.desdeIA = true;
       const montoStr = qp.get('monto');
 
+      // Mapear categoría string del IA a ID numérico
+      const catString = qp.get('categoria') ?? '';
+      const catId = this.mapCategoriaStringToId(catString);
+
       // Usar setTimeout para asegurar que los ion-input estén listos
       setTimeout(() => {
         this.gastoForm.patchValue({
           concepto:   qp.get('concepto')   ?? '',
           monto:      montoStr ? parseFloat(montoStr) : null,
           fecha:      qp.get('fecha')      ?? new Date().toISOString().split('T')[0],
-          categoria:  qp.get('categoria')  ?? '',
+          categoria:  catId,
           metodoPago: qp.get('metodoPago') ?? 'efectivo',
           notas:      qp.get('notas')      ?? '',
         });
@@ -102,17 +112,20 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
     }
   }
 
+  /** Mapea un string de categoría (de la IA) al ID numérico */
+  private mapCategoriaStringToId(catStr: string): number | null {
+    if (!catStr) return null;
+    const lower = catStr.toLowerCase();
+    const cat = this.categoriasService.categorias().find(
+      c => c.nombre.toLowerCase() === lower
+    );
+    return cat?.id ?? null;
+  }
+
   async cargarGasto(id: number) {
     try {
       const gasto = await this.supabase.obtenerGastoPorId(id);
       if (gasto) {
-        // Reverse map categoria_id to string
-        let categoria = 'comida';
-        if (gasto.categoria_id === 2) categoria = 'transporte';
-        if (gasto.categoria_id === 3) categoria = 'servicios';
-        if (gasto.categoria_id === 4) categoria = 'entretenimiento';
-        if (gasto.categoria_id === 5) categoria = 'otros';
-
         // Reverse map metodo_pago_id to string
         let metodoPago = 'efectivo';
         if (gasto.metodo_pago_id === 2) metodoPago = 'tarjeta';
@@ -122,7 +135,7 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
           concepto: gasto.concepto,
           monto: gasto.monto,
           fecha: gasto.fecha_gasto,
-          categoria,
+          categoria: gasto.categoria_id,  // ahora usa el ID directamente
           metodoPago,
           notas: gasto.notas || ''
         });
@@ -136,12 +149,8 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
     if (this.gastoForm.valid) {
       const vals = this.gastoForm.value;
 
-      // Mapeo temporal de categorías y métodos a IDs numéricos
-      let categoriaId = 1;
-      if (vals.categoria === 'transporte') categoriaId = 2;
-      if (vals.categoria === 'servicios') categoriaId = 3;
-      if (vals.categoria === 'entretenimiento') categoriaId = 4;
-      if (vals.categoria === 'otros') categoriaId = 5;
+      // categoria ya es un ID numérico
+      const categoriaId = vals.categoria;
 
       let metodoId = 1;
       if (vals.metodoPago === 'tarjeta') metodoId = 2;
@@ -173,6 +182,52 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
     } else {
       this.gastoForm.markAllAsTouched();
     }
+  }
+
+  /** Maneja el cambio en el select de categoría */
+  onCategoriaChange(event: any) {
+    const valor = event.detail.value;
+    if (valor === '__nueva__') {
+      // Resetear el select para que no quede seleccionado "__nueva__"
+      this.gastoForm.patchValue({ categoria: null });
+      this.abrirModalNuevaCategoria();
+    }
+  }
+
+  /** Abre un alert para crear una nueva categoría */
+  async abrirModalNuevaCategoria() {
+    const alert = await this.alertCtrl.create({
+      header: 'Nueva categoría',
+      message: 'Escribe el nombre de la nueva categoría de gasto.',
+      inputs: [
+        {
+          name: 'nombre',
+          type: 'text',
+          placeholder: 'Ej: Educación, Salud, Mascotas...',
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Crear',
+          handler: async (data) => {
+            const nombre = data.nombre?.trim();
+            if (!nombre) return false; // no cerrar si está vacío
+
+            const nueva = await this.categoriasService.crearCategoria(nombre);
+            if (nueva && nueva.id) {
+              // Seleccionar la nueva categoría automáticamente
+              setTimeout(() => {
+                this.gastoForm.patchValue({ categoria: nueva.id });
+                this.cdr.detectChanges();
+              }, 100);
+            }
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   cancelar() {

@@ -16,6 +16,13 @@ export interface Gasto {
   fecha_creacion?: string;
 }
 
+export interface Categoria {
+  id?: number;
+  nombre: string;
+  icono: string;
+  color: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -167,5 +174,36 @@ export class SupabaseService {
       console.error('Error eliminando gasto:', error);
       throw error;
     }
+  }
+
+  // ─── Categorías ────────────────────────────────────
+
+  /** Obtiene todas las categorías */
+  async obtenerCategorias(): Promise<Categoria[]> {
+    const { data, error } = await this.supabase
+      .from('categorias')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Error obteniendo categorías:', error);
+      throw error;
+    }
+    return data ?? [];
+  }
+
+  /** Inserta una nueva categoría */
+  async insertarCategoria(cat: Omit<Categoria, 'id'>): Promise<Categoria> {
+    const { data, error } = await this.supabase
+      .from('categorias')
+      .insert([cat])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error insertando categoría:', error);
+      throw error;
+    }
+    return data;
   }
 }

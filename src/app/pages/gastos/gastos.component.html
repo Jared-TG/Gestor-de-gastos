@@ -61,7 +61,7 @@
 
   <!-- Category Filter Chips -->
   <div class="filter-chips">
-    @for (filtro of filtrosCategoria; track filtro.id) {
+    @for (filtro of filtrosCategoria(); track filtro.id) {
       <button
         class="filter-chip"
         [class.active]="categoriaFiltro() === filtro.id"

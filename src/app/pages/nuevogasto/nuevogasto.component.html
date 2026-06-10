@@ -62,12 +62,11 @@
           <div class="custom-label">Categoría</div>
           <div class="input-wrapper select-wrapper">
             <ion-select formControlName="categoria" placeholder="Seleccionar" interface="popover"
-              class="custom-input custom-select">
-              <ion-select-option value="comida">Comida</ion-select-option>
-              <ion-select-option value="transporte">Transporte</ion-select-option>
-              <ion-select-option value="servicios">Servicios</ion-select-option>
-              <ion-select-option value="entretenimiento">Entretenimiento</ion-select-option>
-              <ion-select-option value="otros">Otros</ion-select-option>
+              class="custom-input custom-select" (ionChange)="onCategoriaChange($event)">
+              @for (cat of categoriasService.categorias(); track cat.id) {
+                <ion-select-option [value]="cat.id">{{ cat.nombre }}</ion-select-option>
+              }
+              <ion-select-option value="__nueva__">＋ Nueva categoría</ion-select-option>
             </ion-select>
           </div>
         </div>
