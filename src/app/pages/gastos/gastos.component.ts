@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonButton,
@@ -9,9 +9,11 @@ import { addIcons } from 'ionicons';
 import {
   searchOutline, calendarOutline, walletOutline,
   cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
-  createOutline, trashOutline, add, ellipsisVertical, personCircle
+  createOutline, trashOutline, add, ellipsisVertical, personCircle,
+  chevronBackOutline, chevronForwardOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../../services/supabase.service';
+import { FiltroMesService } from '../../services/filtro-mes.service';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -68,12 +70,22 @@ export class GastosComponent {
   constructor(
     private router: Router,
     private supabase: SupabaseService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    public filtroMes: FiltroMesService
   ) {
     addIcons({
       searchOutline, calendarOutline, walletOutline,
       cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
-      createOutline, trashOutline, add, ellipsisVertical, personCircle
+      createOutline, trashOutline, add, ellipsisVertical, personCircle,
+      chevronBackOutline, chevronForwardOutline
+    });
+
+    // Recargar gastos automáticamente cuando cambie el mes
+    effect(() => {
+      // Leer las señales para que el effect se suscriba a ellas
+      this.filtroMes.mes();
+      this.filtroMes.anio();
+      this.cargarGastos();
     });
   }
 
@@ -83,7 +95,10 @@ export class GastosComponent {
 
   async cargarGastos() {
     try {
-      const gastos = await this.supabase.obtenerTodosLosGastos();
+      const gastos = await this.supabase.obtenerGastosPorMes(
+        this.filtroMes.mes(),
+        this.filtroMes.anio()
+      );
       this.todosLosGastos.set(gastos);
     } catch (error) {
       console.error('Error al cargar gastos:', error);
@@ -96,6 +111,14 @@ export class GastosComponent {
 
   seleccionarCategoria(id: number) {
     this.categoriaFiltro.set(id);
+  }
+
+  retrocederMes() {
+    this.filtroMes.mesAnterior();
+  }
+
+  avanzarMes() {
+    this.filtroMes.mesSiguiente();
   }
 
   editarGasto(gasto: Gasto) {

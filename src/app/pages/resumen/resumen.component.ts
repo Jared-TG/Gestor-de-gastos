@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, effect } from '@angular/core';
 import {
   IonContent, IonHeader, IonToolbar, IonIcon,
   IonButtons, IonButton
@@ -11,6 +11,7 @@ import {
   checkmarkCircleOutline, arrowUpOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../../services/supabase.service';
+import { FiltroMesService } from '../../services/filtro-mes.service';
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 
 export interface CategoriaResumen {
@@ -34,7 +35,7 @@ export interface CategoriaResumen {
   ],
 })
 export class ResumenComponent {
-  /** All expenses for the current month */
+  /** All expenses for the selected month */
   gastosDelMes = signal<Gasto[]>([]);
 
   /** All expenses for the previous month (for comparison) */
@@ -118,12 +119,22 @@ export class ResumenComponent {
     return { segments, circumference };
   });
 
-  constructor(private supabase: SupabaseService) {
+  constructor(
+    private supabase: SupabaseService,
+    public filtroMes: FiltroMesService
+  ) {
     addIcons({
       personCircle, notificationsOutline, statsChartOutline,
       cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
       walletOutline, trendingUpOutline, trendingDownOutline,
       checkmarkCircleOutline, arrowUpOutline
+    });
+
+    // Recargar datos automáticamente cuando cambie el mes
+    effect(() => {
+      this.filtroMes.mes();
+      this.filtroMes.anio();
+      this.cargarDatos();
     });
   }
 
@@ -133,9 +144,16 @@ export class ResumenComponent {
 
   async cargarDatos() {
     try {
+      const mes = this.filtroMes.mes();
+      const anio = this.filtroMes.anio();
+
+      // Calcular mes anterior al seleccionado
+      const mesPasado = mes === 0 ? 11 : mes - 1;
+      const anioPasado = mes === 0 ? anio - 1 : anio;
+
       const [gastosActuales, gastosPasados] = await Promise.all([
-        this.supabase.obtenerGastosDelMes(),
-        this.obtenerGastosMesPasado(),
+        this.supabase.obtenerGastosPorMes(mes, anio),
+        this.supabase.obtenerGastosPorMes(mesPasado, anioPasado),
       ]);
       this.gastosDelMes.set(gastosActuales);
       this.gastosDelMesPasado.set(gastosPasados);
@@ -145,23 +163,7 @@ export class ResumenComponent {
     }
   }
 
-  private async obtenerGastosMesPasado(): Promise<Gasto[]> {
-    const now = new Date();
-    const primerDiaMesPasado = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-      .toISOString().split('T')[0];
-    const ultimoDiaMesPasado = new Date(now.getFullYear(), now.getMonth(), 0)
-      .toISOString().split('T')[0];
-
-    // Access the supabase client through the service's public API
-    // We'll use a workaround by fetching all and filtering
-    const todosLosGastos = await this.supabase.obtenerTodosLosGastos();
-    return todosLosGastos.filter(g => {
-      const fecha = g.fecha_gasto;
-      return fecha >= primerDiaMesPasado && fecha <= ultimoDiaMesPasado;
-    });
-  }
-
   getNombreMes(): string {
-    return new Date().toLocaleDateString('es-MX', { month: 'long' });
+    return this.filtroMes.nombreMes();
   }
 }

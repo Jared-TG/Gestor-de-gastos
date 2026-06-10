@@ -23,11 +23,11 @@
 <ion-content>
   <div class="summary-card">
     <div>
-      <span>Total del mes</span>
+      <span>Total de {{ filtroMes.nombreMes() }}</span>
       <strong>{{ totalMes() | currency:'$':'symbol':'1.2-2' }}</strong>
       <div>
         <ion-icon name="trending-up-outline" aria-hidden="true"></ion-icon>
-        <span>{{ conteoGastos() }} gastos este mes</span>
+        <span>{{ conteoGastos() }} gastos en {{ filtroMes.nombreMes() }}</span>
       </div>
     </div>
     <ion-icon name="trending-up-outline" aria-hidden="true" class="arrowDecoration"></ion-icon>
