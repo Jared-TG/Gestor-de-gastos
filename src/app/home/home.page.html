@@ -7,6 +7,12 @@
       <h1 class="profile-title ion-no-margin">Gasto Facil</h1>
     </div>
     <ion-buttons slot="end">
+      @if (pwaInstall.showInstallUI() && !pwaInstall.isInstalled()) {
+        <ion-button fill="clear" aria-label="Instalar app" (click)="installApp()" class="install-btn">
+          <ion-icon slot="start" name="download-outline"></ion-icon>
+          Instalar
+        </ion-button>
+      }
       <ion-button fill="clear" aria-label="Notificaciones" class="notification-icon">
         <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
       </ion-button>
@@ -97,4 +103,30 @@
     </div>
     <p>Tu camino hacia la libertad financiera empieza con un pequeño paso.</p>
   </div>
+
+  <!-- Modal instrucciones iOS -->
+  @if (showIosInstructions()) {
+    <div class="ios-overlay" (click)="dismissIosInstructions()">
+      <div class="ios-modal" (click)="$event.stopPropagation()">
+        <div class="ios-modal__header">
+          <strong>Instalar en iPhone / iPad</strong>
+          <button class="ios-modal__close" (click)="dismissIosInstructions()">&#x2715;</button>
+        </div>
+        <ol class="ios-modal__steps">
+          <li>
+            <ion-icon name="share-outline"></ion-icon>
+            Toca el botón <strong>Compartir</strong>
+            <span class="ios-hint">(el ícono de flecha hacia arriba en Safari)</span>
+          </li>
+          <li>
+            Desplázate hasta <strong>"Agregar a pantalla de inicio"</strong>
+          </li>
+          <li>
+            Toca <strong>"Agregar"</strong> y listo 🎉
+          </li>
+        </ol>
+        <p class="ios-modal__note">💡 Asegúrate de usar <strong>Safari</strong> para poder instalar la app.</p>
+      </div>
+    </div>
+  }
 </ion-content>

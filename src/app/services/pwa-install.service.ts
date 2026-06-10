@@ -15,6 +15,9 @@ export class PwaInstallService {
   /** true si la app ya está corriendo como PWA instalada */
   isInstalled = signal(false);
 
+  /** true si debe mostrarse alguna UI de instalación */
+  showInstallUI = signal(false);
+
   constructor() {
     this.detectPlatform();
     this.listenForInstallPrompt();
@@ -27,6 +30,7 @@ export class PwaInstallService {
 
     if (isInStandaloneMode) {
       this.isInstalled.set(true);
+      this.showInstallUI.set(false);
       return;
     }
 
@@ -34,20 +38,24 @@ export class PwaInstallService {
     const isIos = /iphone|ipad|ipod/.test(ua);
     if (isIos) {
       this.isIos.set(true);
+      this.showInstallUI.set(true);
     }
   }
 
   private listenForInstallPrompt() {
+    // Captura el evento antes de que el componente esté listo
     window.addEventListener('beforeinstallprompt', (e: Event) => {
       e.preventDefault();
       this.deferredPrompt = e;
       this.canInstall.set(true);
+      this.showInstallUI.set(true);
     });
 
     window.addEventListener('appinstalled', () => {
       this.deferredPrompt = null;
       this.canInstall.set(false);
       this.isInstalled.set(true);
+      this.showInstallUI.set(false);
     });
   }
 
@@ -58,6 +66,10 @@ export class PwaInstallService {
     const { outcome } = await this.deferredPrompt.userChoice;
     this.deferredPrompt = null;
     this.canInstall.set(false);
+    if (outcome === 'accepted') {
+      this.isInstalled.set(true);
+      this.showInstallUI.set(false);
+    }
     return outcome === 'accepted';
   }
 }
