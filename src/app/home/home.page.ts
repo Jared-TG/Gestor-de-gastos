@@ -13,12 +13,14 @@ import {
   pricetagOutline, restaurantOutline, medkitOutline, schoolOutline, homeOutline,
   airplaneOutline, cartOutline, giftOutline, fitnessOutline,
   pawOutline, constructOutline, musicalNotesOutline, bookOutline,
-  busOutline, flashOutline, gameControllerOutline, layersOutline
+  busOutline, flashOutline, gameControllerOutline, layersOutline,
+  downloadOutline, shareOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../services/supabase.service';
 import { FiltroMesService } from '../services/filtro-mes.service';
 import { CategoriasService } from '../services/categorias.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { PwaInstallService } from '../services/pwa-install.service';
 
 @Component({
   selector: 'app-home',
@@ -88,11 +90,14 @@ export class HomePage {
     return this.categoriasService.getIcono(maxId);
   });
 
+  showIosInstructions = signal(false);
+
   constructor(
     private router: Router,
     private supabase: SupabaseService,
     public filtroMes: FiltroMesService,
-    private categoriasService: CategoriasService
+    private categoriasService: CategoriasService,
+    public pwaInstall: PwaInstallService
   ) {
     addIcons({
       add, calendarOutline, chevronForwardOutline, notificationsOutline,
@@ -101,7 +106,8 @@ export class HomePage {
       pricetagOutline, restaurantOutline, medkitOutline, schoolOutline, homeOutline,
       airplaneOutline, cartOutline, giftOutline, fitnessOutline,
       pawOutline, constructOutline, musicalNotesOutline, bookOutline,
-      busOutline, flashOutline, gameControllerOutline, layersOutline
+      busOutline, flashOutline, gameControllerOutline, layersOutline,
+      downloadOutline, shareOutline
     });
 
     // Recargar datos automáticamente cuando cambie el mes
@@ -150,5 +156,17 @@ export class HomePage {
 
   addGasto() {
     this.router.navigate(['/nuevogasto']);
+  }
+
+  async installApp() {
+    if (this.pwaInstall.canInstall()) {
+      await this.pwaInstall.promptInstall();
+    } else if (this.pwaInstall.isIos()) {
+      this.showIosInstructions.set(true);
+    }
+  }
+
+  dismissIosInstructions() {
+    this.showIosInstructions.set(false);
   }
 }
