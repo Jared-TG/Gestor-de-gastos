@@ -40,6 +40,25 @@
     ></ion-searchbar>
   </div>
 
+  <!-- Month Selector -->
+  <div class="month-selector">
+    <button class="month-nav-btn" (click)="retrocederMes()" aria-label="Mes anterior">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+    <div class="month-label">
+      <ion-icon name="calendar-outline" class="month-icon"></ion-icon>
+      <span>{{ filtroMes.etiquetaMes() }}</span>
+    </div>
+    <button
+      class="month-nav-btn"
+      (click)="avanzarMes()"
+      [disabled]="filtroMes.esMesActual()"
+      aria-label="Mes siguiente"
+    >
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  </div>
+
   <!-- Category Filter Chips -->
   <div class="filter-chips">
     @for (filtro of filtrosCategoria; track filtro.id) {
@@ -48,9 +67,6 @@
         [class.active]="categoriaFiltro() === filtro.id"
         (click)="seleccionarCategoria(filtro.id)"
       >
-        @if (filtro.id === 0) {
-          <ion-icon name="calendar-outline" class="chip-icon"></ion-icon>
-        }
         {{ filtro.nombre }}
       </button>
     }
@@ -98,7 +114,7 @@
       <div class="no-gastos">
         <ion-icon name="wallet-outline" class="no-gastos-icon"></ion-icon>
         <p>No se encontraron gastos</p>
-        <span>Agrega un nuevo gasto con el botón +</span>
+        <span>No hay gastos en {{ filtroMes.etiquetaMes() }}</span>
       </div>
     }
   </div>

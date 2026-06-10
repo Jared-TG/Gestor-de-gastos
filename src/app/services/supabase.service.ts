@@ -87,6 +87,45 @@ export class SupabaseService {
     return data ?? [];
   }
 
+  /** Obtiene todos los gastos de un mes/año específico */
+  async obtenerGastosPorMes(mes: number, anio: number): Promise<Gasto[]> {
+    const primerDia = new Date(anio, mes, 1).toISOString().split('T')[0];
+    const ultimoDia = new Date(anio, mes + 1, 0).toISOString().split('T')[0];
+
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .select('*')
+      .gte('fecha_gasto', primerDia)
+      .lte('fecha_gasto', ultimoDia)
+      .order('fecha_gasto', { ascending: false });
+
+    if (error) {
+      console.error('Error obteniendo gastos por mes:', error);
+      throw error;
+    }
+    return data ?? [];
+  }
+
+  /** Obtiene los últimos 5 gastos de un mes/año específico */
+  async obtenerGastosRecientesPorMes(mes: number, anio: number): Promise<Gasto[]> {
+    const primerDia = new Date(anio, mes, 1).toISOString().split('T')[0];
+    const ultimoDia = new Date(anio, mes + 1, 0).toISOString().split('T')[0];
+
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .select('*')
+      .gte('fecha_gasto', primerDia)
+      .lte('fecha_gasto', ultimoDia)
+      .order('fecha_creacion', { ascending: false })
+      .limit(5);
+
+    if (error) {
+      console.error('Error obteniendo gastos recientes por mes:', error);
+      throw error;
+    }
+    return data ?? [];
+  }
+
   /** Obtiene un gasto por su ID */
   async obtenerGastoPorId(id: number): Promise<Gasto | null> {
     const { data, error } = await this.supabase

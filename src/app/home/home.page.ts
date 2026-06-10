@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
@@ -12,6 +12,7 @@ import {
   walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../services/supabase.service';
+import { FiltroMesService } from '../services/filtro-mes.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
@@ -25,10 +26,10 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
   ],
 })
 export class HomePage {
-  /** Signal con todos los gastos del mes actual */
+  /** Signal con todos los gastos del mes seleccionado */
   gastosDelMes = signal<Gasto[]>([]);
 
-  /** Signal con los últimos 5 gastos */
+  /** Signal con los últimos 5 gastos del mes seleccionado */
   gastosRecientes = signal<Gasto[]>([]);
 
   /** Computed: suma total del mes */
@@ -36,8 +37,9 @@ export class HomePage {
     this.gastosDelMes().reduce((sum, g) => sum + Number(g.monto), 0)
   );
 
-  /** Computed: suma de los gastos de hoy */
+  /** Computed: suma de los gastos de hoy (solo si el mes actual está seleccionado) */
   totalHoy = computed(() => {
+    if (!this.filtroMes.esMesActual()) return 0;
     const hoy = new Date().toISOString().split('T')[0];
     return this.gastosDelMes()
       .filter(g => g.fecha_gasto === hoy)
@@ -83,12 +85,20 @@ export class HomePage {
 
   constructor(
     private router: Router,
-    private supabase: SupabaseService
+    private supabase: SupabaseService,
+    public filtroMes: FiltroMesService
   ) {
     addIcons({
       add, calendarOutline, chevronForwardOutline, notificationsOutline,
       personCircle, qrCodeOutline, trendingUpOutline,
       walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline
+    });
+
+    // Recargar datos automáticamente cuando cambie el mes
+    effect(() => {
+      this.filtroMes.mes();
+      this.filtroMes.anio();
+      this.cargarDatos();
     });
   }
 
@@ -98,11 +108,13 @@ export class HomePage {
 
   async cargarDatos() {
     try {
-      const [mes, recientes] = await Promise.all([
-        this.supabase.obtenerGastosDelMes(),
-        this.supabase.obtenerGastosRecientes()
+      const mes = this.filtroMes.mes();
+      const anio = this.filtroMes.anio();
+      const [gastosMes, recientes] = await Promise.all([
+        this.supabase.obtenerGastosPorMes(mes, anio),
+        this.supabase.obtenerGastosRecientesPorMes(mes, anio)
       ]);
-      this.gastosDelMes.set(mes);
+      this.gastosDelMes.set(gastosMes);
       this.gastosRecientes.set(recientes);
     } catch (error) {
       console.error('Error al cargar datos', error);
