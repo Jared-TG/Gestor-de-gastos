@@ -1,9 +1,15 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "Practica4 App",
+  "short_name": "Practica4",
+  "description": "Aplicación Ionic - Practica 4",
   "display": "standalone",
-  "scope": "./",
-  "start_url": "./",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "theme_color": "#3880ff",
+  "background_color": "#ffffff",
+  "lang": "es",
+  "categories": ["utilities"],
   "icons": [
     {
       "src": "icons/icon-72x72.png",
