@@ -10,10 +10,15 @@ import {
   searchOutline, calendarOutline, walletOutline,
   cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
   createOutline, trashOutline, add, ellipsisVertical, personCircle,
-  chevronBackOutline, chevronForwardOutline
+  chevronBackOutline, chevronForwardOutline, pricetagOutline,
+  restaurantOutline, medkitOutline, schoolOutline, homeOutline,
+  airplaneOutline, cartOutline, giftOutline, fitnessOutline,
+  pawOutline, constructOutline, musicalNotesOutline, bookOutline,
+  busOutline, flashOutline, gameControllerOutline, layersOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../../services/supabase.service';
 import { FiltroMesService } from '../../services/filtro-mes.service';
+import { CategoriasService } from '../../services/categorias.service';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -38,15 +43,11 @@ export class GastosComponent {
   /** Filtro de categoría seleccionado (0 = Todos) */
   categoriaFiltro = signal<number>(0);
 
-  /** Filtros disponibles para los chips */
-  filtrosCategoria = [
-    { id: 0, nombre: 'Todos' },
-    { id: 1, nombre: 'Comida' },
-    { id: 2, nombre: 'Transporte' },
-    { id: 3, nombre: 'Servicios' },
-    { id: 4, nombre: 'Entretenimiento' },
-    { id: 5, nombre: 'Otros' },
-  ];
+  /** Filtros disponibles para los chips (dinámico desde el servicio) */
+  filtrosCategoria = computed(() => {
+    const cats = this.categoriasService.categorias();
+    return [{ id: 0, nombre: 'Todos' }, ...cats.map(c => ({ id: c.id!, nombre: c.nombre }))];
+  });
 
   /** Gastos filtrados según búsqueda y categoría */
   gastosFiltrados = computed(() => {
@@ -71,18 +72,22 @@ export class GastosComponent {
     private router: Router,
     private supabase: SupabaseService,
     private alertCtrl: AlertController,
-    public filtroMes: FiltroMesService
+    public filtroMes: FiltroMesService,
+    public categoriasService: CategoriasService
   ) {
     addIcons({
       searchOutline, calendarOutline, walletOutline,
       cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
       createOutline, trashOutline, add, ellipsisVertical, personCircle,
-      chevronBackOutline, chevronForwardOutline
+      chevronBackOutline, chevronForwardOutline, pricetagOutline,
+      restaurantOutline, medkitOutline, schoolOutline, homeOutline,
+      airplaneOutline, cartOutline, giftOutline, fitnessOutline,
+      pawOutline, constructOutline, musicalNotesOutline, bookOutline,
+      busOutline, flashOutline, gameControllerOutline, layersOutline
     });
 
     // Recargar gastos automáticamente cuando cambie el mes
     effect(() => {
-      // Leer las señales para que el effect se suscriba a ellas
       this.filtroMes.mes();
       this.filtroMes.anio();
       this.cargarGastos();
@@ -90,6 +95,7 @@ export class GastosComponent {
   }
 
   async ionViewWillEnter() {
+    await this.categoriasService.cargarCategorias();
     await this.cargarGastos();
   }
 
@@ -147,7 +153,6 @@ export class GastosComponent {
     try {
       if (gasto.id) {
         await this.supabase.eliminarGasto(gasto.id);
-        // Refresh the list
         await this.cargarGastos();
       }
     } catch (error) {
@@ -160,36 +165,15 @@ export class GastosComponent {
   }
 
   getIconForCategory(categoryId: number): string {
-    switch (categoryId) {
-      case 1: return 'cafe-outline';
-      case 2: return 'car-outline';
-      case 3: return 'receipt-outline';
-      case 4: return 'film-outline';
-      case 5: return 'cog-outline';
-      default: return 'wallet-outline';
-    }
+    return this.categoriasService.getIcono(categoryId);
   }
 
   getCategoryName(categoryId: number): string {
-    switch (categoryId) {
-      case 1: return 'Comida';
-      case 2: return 'Transporte';
-      case 3: return 'Servicios';
-      case 4: return 'Entretenimiento';
-      case 5: return 'Otros';
-      default: return 'Otros';
-    }
+    return this.categoriasService.getNombre(categoryId);
   }
 
   getCategoryColor(categoryId: number): string {
-    switch (categoryId) {
-      case 1: return '#e74c3c';
-      case 2: return '#3498db';
-      case 3: return '#f39c12';
-      case 4: return '#2ecc71';
-      case 5: return '#9b59b6';
-      default: return '#95a5a6';
-    }
+    return this.categoriasService.getColor(categoryId);
   }
 
   formatDate(dateString?: string): string {

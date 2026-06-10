@@ -9,10 +9,15 @@ import { addIcons } from 'ionicons';
 import {
   add, calendarOutline, chevronForwardOutline, notificationsOutline,
   personCircle, qrCodeOutline, trendingUpOutline,
-  walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline
+  walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
+  pricetagOutline, restaurantOutline, medkitOutline, schoolOutline, homeOutline,
+  airplaneOutline, cartOutline, giftOutline, fitnessOutline,
+  pawOutline, constructOutline, musicalNotesOutline, bookOutline,
+  busOutline, flashOutline, gameControllerOutline, layersOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../services/supabase.service';
 import { FiltroMesService } from '../services/filtro-mes.service';
+import { CategoriasService } from '../services/categorias.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
@@ -63,7 +68,7 @@ export class HomePage {
     for (const [id, count] of conteo) {
       if (count > maxCount) { maxId = id; maxCount = count; }
     }
-    return this.getCategoryName(maxId);
+    return this.categoriasService.getNombre(maxId);
   });
 
   /** Computed: icono de la categoría más frecuente del mes */
@@ -80,18 +85,23 @@ export class HomePage {
     for (const [id, count] of conteo) {
       if (count > maxCount) { maxId = id; maxCount = count; }
     }
-    return this.getIconForCategory(maxId);
+    return this.categoriasService.getIcono(maxId);
   });
 
   constructor(
     private router: Router,
     private supabase: SupabaseService,
-    public filtroMes: FiltroMesService
+    public filtroMes: FiltroMesService,
+    private categoriasService: CategoriasService
   ) {
     addIcons({
       add, calendarOutline, chevronForwardOutline, notificationsOutline,
       personCircle, qrCodeOutline, trendingUpOutline,
-      walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline
+      walletOutline, cafeOutline, carOutline, receiptOutline, filmOutline, cogOutline,
+      pricetagOutline, restaurantOutline, medkitOutline, schoolOutline, homeOutline,
+      airplaneOutline, cartOutline, giftOutline, fitnessOutline,
+      pawOutline, constructOutline, musicalNotesOutline, bookOutline,
+      busOutline, flashOutline, gameControllerOutline, layersOutline
     });
 
     // Recargar datos automáticamente cuando cambie el mes
@@ -103,6 +113,7 @@ export class HomePage {
   }
 
   async ionViewWillEnter() {
+    await this.categoriasService.cargarCategorias();
     await this.cargarDatos();
   }
 
@@ -122,24 +133,11 @@ export class HomePage {
   }
 
   getIconForCategory(categoryId: number): string {
-    switch (categoryId) {
-      case 1: return 'cafe-outline';
-      case 2: return 'car-outline';
-      case 3: return 'receipt-outline';
-      case 4: return 'film-outline';
-      case 5: return 'cog-outline';
-      default: return 'wallet-outline';
-    }
+    return this.categoriasService.getIcono(categoryId);
   }
 
   getCategoryName(categoryId: number): string {
-    switch (categoryId) {
-      case 1: return 'Comida';
-      case 2: return 'Transporte';
-      case 3: return 'Servicios';
-      case 4: return 'Entretenimiento';
-      default: return 'Otros';
-    }
+    return this.categoriasService.getNombre(categoryId);
   }
 
   formatDate(dateString?: string): string {
