@@ -30,17 +30,40 @@ export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(environment.supabaseurl, environment.supabasekey);
+    this.supabase = createClient(environment.supabaseurl, environment.supabasekey, {
+      auth: {
+        // Deshabilita el Web Locks API para evitar conflicto entre
+        // el Service Worker de la PWA y la pestaña del navegador
+        lock: <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn()
+      }
+    });
+  }
+
+  get client(): SupabaseClient {
+    return this.supabase;
   }
 
   async insertarGasto(gasto: Gasto) {
+    const { data: { session } } = await this.supabase.auth.getSession();
+    
+    if (!session?.user?.id) {
+      throw new Error('No hay sesión activa para guardar el gasto');
+    }
+
+    // Agregamos explícitamente el user_id para asegurar que RLS y NOT NULL se cumplan
+    // independientemente de si la tabla tiene o no DEFAULT auth.uid()
+    const payload = {
+      ...gasto,
+      user_id: session.user.id
+    };
+
     const { data, error } = await this.supabase
       .from('gastos')
-      .insert([gasto])
+      .insert([payload])
       .select();
 
     if (error) {
-      console.error('Error insertando gasto:', error);
+      console.error('Error insertando gasto detallado:', error);
       throw error;
     }
     return data;
