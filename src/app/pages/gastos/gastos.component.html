@@ -24,6 +24,11 @@
 </ion-fab>
 
 <ion-content>
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" mode="ios" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <!-- Page Title -->
   <div class="page-title">
     <h2>Mis gastos</h2>

@@ -27,6 +27,11 @@
 </ion-fab>
 
 <ion-content>
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" mode="ios" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <div class="summary-card">
     <div>
       <span>Total de {{ filtroMes.nombreMes() }}</span>

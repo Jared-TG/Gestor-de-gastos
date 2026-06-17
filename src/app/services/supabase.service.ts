@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
+import { Subject } from 'rxjs';
 
 export interface Gasto {
   id?: number;
@@ -30,14 +31,30 @@ export interface Categoria {
 export class SupabaseService {
   private supabase: SupabaseClient;
 
+  // Subject para notificar a toda la app cuando cambie un gasto
+  private gastosCambiadosSubject = new Subject<void>();
+  public gastosCambiados$ = this.gastosCambiadosSubject.asObservable();
+
   constructor() {
     this.supabase = createClient(environment.supabaseurl, environment.supabasekey, {
       auth: {
-        // Deshabilita el Web Locks API para evitar conflicto entre
-        // el Service Worker de la PWA y la pestaña del navegador
         lock: <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn()
       }
     });
+
+    // Configurar escucha en tiempo real global
+    this.supabase
+      .channel('gastos-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'gastos' },
+        (payload) => {
+          console.log('Detectado cambio en DB global:', payload);
+          // Emitir evento para que las páginas recarguen la info
+          this.gastosCambiadosSubject.next();
+        }
+      )
+      .subscribe();
   }
 
   get client(): SupabaseClient {

@@ -84,6 +84,16 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
    * Aquí es seguro hacer patchValue para que se reflejen los datos.
    */
   ionViewDidEnter() {
+    // Si no es modo edición y venimos limpios, reseteamos el formulario
+    // para evitar que Ionic muestre datos cacheados de la visita anterior.
+    if (!this.modoEdicion && !this.desdeIA) {
+      this.gastoForm.reset();
+      this.gastoForm.patchValue({
+        fecha: new Date().toISOString().split('T')[0],
+        metodoPago: 'efectivo',
+      });
+    }
+
     const qp = this.route.snapshot.queryParamMap;
     if (qp.get('desde_ia') === 'true') {
       this.desdeIA = true;
@@ -173,6 +183,16 @@ export class NuevogastoComponent implements OnInit, ViewDidEnter {
           await this.supabase.insertarGasto(gastoData);
           console.log('Gasto guardado exitosamente');
         }
+
+        // Limpiar el formulario en memoria
+        this.gastoForm.reset();
+        this.gastoForm.patchValue({
+          fecha: new Date().toISOString().split('T')[0],
+          metodoPago: 'efectivo',
+        });
+        this.modoEdicion = false;
+        this.gastoId = null;
+        this.desdeIA = false;
 
         this.router.navigate(['/gastos']);
       } catch (error) {
