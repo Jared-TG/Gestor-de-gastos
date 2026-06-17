@@ -1,0 +1,209 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div slot="start" class="profile-group">
+      <ion-button fill="clear" aria-label="perfil" class="ion-no-margin ion-no-padding">
+        <ion-icon slot="icon-only" name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+      <h1 class="profile-title ion-no-margin">{{ auth.nombreUsuario() }}</h1>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- ====== VISTA AUTENTICADO ====== -->
+  @if (!auth.esAnonimo()) {
+    <div class="authenticated-view">
+      <div class="welcome-banner">
+        <div class="welcome-avatar">
+          <ion-icon name="person-circle"></ion-icon>
+        </div>
+        <h2>{{ auth.nombreUsuario() }}</h2>
+        <p>{{ auth.emailUsuario() }}</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-info-row">
+          <ion-icon name="person-outline"></ion-icon>
+          <div>
+            <span class="info-label">Nombre</span>
+            <span class="info-value">{{ auth.nombreUsuario() }}</span>
+          </div>
+        </div>
+        <div class="profile-info-row">
+          <ion-icon name="mail-outline"></ion-icon>
+          <div>
+            <span class="info-label">Correo electrónico</span>
+            <span class="info-value">{{ auth.emailUsuario() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="logout-btn" (click)="cerrarSesion()" [disabled]="cargando()">
+        @if (cargando()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <ion-icon name="log-out-outline"></ion-icon>
+          Cerrar sesión
+        }
+      </button>
+    </div>
+  }
+
+  <!-- ====== VISTA NO AUTENTICADO (LOGIN / REGISTRO) ====== -->
+  @if (auth.esAnonimo()) {
+    <!-- Banner superior -->
+    <div class="auth-banner">
+      <span class="banner-welcome">Bienvenido a</span>
+      <h2 class="banner-title">Gasto Fácil</h2>
+      <p class="banner-subtitle">Controla tus finanzas de forma fácil y rápida</p>
+    </div>
+
+    <!-- Tabs login / registro -->
+    <div class="auth-tabs">
+      <button
+        class="auth-tab"
+        [class.active]="vistaActiva() === 'login'"
+        (click)="cambiarVista('login')">
+        Iniciar sesión
+      </button>
+      <button
+        class="auth-tab"
+        [class.active]="vistaActiva() === 'registro'"
+        (click)="cambiarVista('registro')">
+        Registrarse
+      </button>
+    </div>
+
+    <!-- ═══ Formulario LOGIN ═══ -->
+    @if (vistaActiva() === 'login') {
+      <div class="auth-form-card">
+        <p class="form-description">Ingresa tus credenciales para acceder a tu cuenta</p>
+
+        <div class="input-wrapper">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <input
+            type="email"
+            name="emailLogin"
+            placeholder="Correo electrónico"
+            [(ngModel)]="email"
+            class="auth-input"
+          />
+        </div>
+
+        <div class="input-wrapper">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <input
+            [type]="mostrarPassword() ? 'text' : 'password'"
+            name="passwordLogin"
+            placeholder="Contraseña"
+            [(ngModel)]="password"
+            class="auth-input"
+          />
+          <button class="toggle-pwd" (click)="togglePassword()" type="button">
+            <ion-icon [name]="mostrarPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+        </div>
+
+        <a class="forgot-link">¿Olvidaste tu contraseña?</a>
+
+        @if (errorMsg()) {
+          <div class="error-msg">{{ errorMsg() }}</div>
+        }
+        @if (exitoMsg()) {
+          <div class="success-msg">{{ exitoMsg() }}</div>
+        }
+
+        <button class="auth-submit-btn" (click)="iniciarSesion()" [disabled]="cargando()">
+          @if (cargando()) {
+            <ion-spinner name="crescent" color="light"></ion-spinner>
+          } @else {
+            Iniciar sesión
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          }
+        </button>
+
+        <p class="switch-text">
+          ¿No tienes cuenta? <a (click)="cambiarVista('registro')">Regístrate</a>
+        </p>
+      </div>
+    }
+
+    <!-- ═══ Formulario REGISTRO ═══ -->
+    @if (vistaActiva() === 'registro') {
+      <div class="auth-form-card">
+        <p class="form-description">Crea tu cuenta y empieza a controlar tus gastos</p>
+
+        <div class="input-wrapper">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <input
+            type="text"
+            name="nombreRegistro"
+            placeholder="Nombre completo"
+            [(ngModel)]="nombre"
+            class="auth-input"
+          />
+        </div>
+
+        <div class="input-wrapper">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <input
+            type="email"
+            name="emailRegistro"
+            placeholder="Correo electrónico"
+            [(ngModel)]="email"
+            class="auth-input"
+          />
+        </div>
+
+        <div class="input-wrapper">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <input
+            [type]="mostrarPassword() ? 'text' : 'password'"
+            name="passwordRegistro"
+            placeholder="Contraseña"
+            [(ngModel)]="password"
+            class="auth-input"
+          />
+          <button class="toggle-pwd" (click)="togglePassword()" type="button">
+            <ion-icon [name]="mostrarPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <input
+            [type]="mostrarConfirmPassword() ? 'text' : 'password'"
+            name="confirmarPasswordRegistro"
+            placeholder="Confirmar contraseña"
+            [(ngModel)]="confirmarPassword"
+            class="auth-input"
+          />
+          <button class="toggle-pwd" (click)="toggleConfirmPassword()" type="button">
+            <ion-icon [name]="mostrarConfirmPassword() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+        </div>
+
+        <p class="legal-text">
+          Al registrarte aceptas nuestros <a>Términos de uso</a> y
+          <a>Política de privacidad</a>
+        </p>
+
+        @if (errorMsg()) {
+          <div class="error-msg">{{ errorMsg() }}</div>
+        }
+        @if (exitoMsg()) {
+          <div class="success-msg">{{ exitoMsg() }}</div>
+        }
+
+        <button class="auth-submit-btn" (click)="registrarse()" [disabled]="cargando()">
+          @if (cargando()) {
+            <ion-spinner name="crescent" color="light"></ion-spinner>
+          } @else {
+            Crear cuenta
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          }
+        </button>
+      </div>
+    }
+  }
+</ion-content>

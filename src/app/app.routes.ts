@@ -47,6 +47,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./pages/perfil/perfil.component').then(
+            (m) => m.PerfilComponent
+          ),
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',
