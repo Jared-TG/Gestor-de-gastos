@@ -8,7 +8,7 @@ import {
   IonTabs,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { homeOutline, walletOutline, qrCodeOutline, statsChartOutline } from 'ionicons/icons';
+import { homeOutline, walletOutline, qrCodeOutline, statsChartOutline, personOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-tabs',
@@ -34,6 +34,11 @@ import { homeOutline, walletOutline, qrCodeOutline, statsChartOutline } from 'io
           <ion-icon name="stats-chart-outline"></ion-icon>
           <ion-label>Resumen</ion-label>
         </ion-tab-button>
+
+        <ion-tab-button tab="perfil">
+          <ion-icon name="person-outline"></ion-icon>
+          <ion-label>Perfil</ion-label>
+        </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
   `,
@@ -53,6 +58,7 @@ export class TabsPage {
       walletOutline,
       qrCodeOutline,
       statsChartOutline,
+      personOutline,
     });
   }
 }

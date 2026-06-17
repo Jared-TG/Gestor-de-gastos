@@ -21,6 +21,7 @@ export interface Categoria {
   nombre: string;
   icono: string;
   color: string;
+  user_id?: string;
 }
 
 @Injectable({
@@ -217,9 +218,20 @@ export class SupabaseService {
 
   /** Inserta una nueva categoría */
   async insertarCategoria(cat: Omit<Categoria, 'id'>): Promise<Categoria> {
+    const { data: { session } } = await this.supabase.auth.getSession();
+    
+    if (!session?.user?.id) {
+      throw new Error('No hay sesión activa para guardar la categoría');
+    }
+
+    const payload = {
+      ...cat,
+      user_id: session.user.id
+    };
+
     const { data, error } = await this.supabase
       .from('categorias')
-      .insert([cat])
+      .insert([payload])
       .select()
       .single();
 
