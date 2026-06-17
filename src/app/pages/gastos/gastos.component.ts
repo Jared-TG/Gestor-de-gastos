@@ -1,8 +1,10 @@
-import { Component, signal, computed, effect } from '@angular/core';
+import { Component, signal, computed, effect, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonButton,
-  IonSearchbar, IonFab, IonFabButton, AlertController
+  IonSearchbar, IonFab, IonFabButton, AlertController,
+  IonRefresher, IonRefresherContent
 } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
@@ -30,10 +32,11 @@ import { FormsModule } from '@angular/forms';
   imports: [
     IonHeader, IonToolbar, IonTitle, IonContent, IonIcon,
     IonButtons, IonButton, IonSearchbar, IonFab, IonFabButton,
+    IonRefresher, IonRefresherContent,
     RouterModule, CurrencyPipe, FormsModule
   ],
 })
-export class GastosComponent {
+export class GastosComponent implements OnDestroy {
   /** Todos los gastos cargados de Supabase */
   todosLosGastos = signal<Gasto[]>([]);
 
@@ -42,6 +45,8 @@ export class GastosComponent {
 
   /** Filtro de categoría seleccionado (0 = Todos) */
   categoriaFiltro = signal<number>(0);
+
+  private dbSub: Subscription;
 
   /** Filtros disponibles para los chips (dinámico desde el servicio) */
   filtrosCategoria = computed(() => {
@@ -92,6 +97,17 @@ export class GastosComponent {
       this.filtroMes.anio();
       this.cargarGastos();
     });
+
+    // Suscribirse a los cambios en tiempo real de Supabase
+    this.dbSub = this.supabase.gastosCambiados$.subscribe(() => {
+      this.cargarGastos();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.dbSub) {
+      this.dbSub.unsubscribe();
+    }
   }
 
   async ionViewWillEnter() {
@@ -109,6 +125,12 @@ export class GastosComponent {
     } catch (error) {
       console.error('Error al cargar gastos:', error);
     }
+  }
+
+  async handleRefresh(event: any) {
+    await this.categoriasService.cargarCategorias();
+    await this.cargarGastos();
+    event.target.complete();
   }
 
   onBuscar(event: any) {

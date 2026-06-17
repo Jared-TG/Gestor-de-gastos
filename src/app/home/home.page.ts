@@ -1,8 +1,10 @@
-import { Component, signal, computed, effect } from '@angular/core';
+import { Component, signal, computed, effect, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
-  IonFab, IonFabButton, IonIcon, IonButtons, IonButton
+  IonFab, IonFabButton, IonIcon, IonButtons, IonButton,
+  IonRefresher, IonRefresherContent
 } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
@@ -14,7 +16,7 @@ import {
   airplaneOutline, cartOutline, giftOutline, fitnessOutline,
   pawOutline, constructOutline, musicalNotesOutline, bookOutline,
   busOutline, flashOutline, gameControllerOutline, layersOutline,
-  downloadOutline, shareOutline
+  downloadOutline, shareOutline, chevronDownCircleOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../services/supabase.service';
 import { FiltroMesService } from '../services/filtro-mes.service';
@@ -29,15 +31,18 @@ import { PwaInstallService } from '../services/pwa-install.service';
   imports: [
     IonHeader, IonToolbar, IonContent, IonFab, IonFabButton,
     IonIcon, IonButtons, IonButton, IonTitle, RouterModule,
+    IonRefresher, IonRefresherContent,
     CurrencyPipe, DatePipe
   ],
 })
-export class HomePage {
+export class HomePage implements OnDestroy {
   /** Signal con todos los gastos del mes seleccionado */
   gastosDelMes = signal<Gasto[]>([]);
 
   /** Signal con los últimos 5 gastos del mes seleccionado */
   gastosRecientes = signal<Gasto[]>([]);
+
+  private dbSub: Subscription;
 
   /** Computed: suma total del mes */
   totalMes = computed(() =>
@@ -107,7 +112,7 @@ export class HomePage {
       airplaneOutline, cartOutline, giftOutline, fitnessOutline,
       pawOutline, constructOutline, musicalNotesOutline, bookOutline,
       busOutline, flashOutline, gameControllerOutline, layersOutline,
-      downloadOutline, shareOutline
+      downloadOutline, shareOutline, chevronDownCircleOutline
     });
 
     // Recargar datos automáticamente cuando cambie el mes
@@ -116,11 +121,28 @@ export class HomePage {
       this.filtroMes.anio();
       this.cargarDatos();
     });
+
+    // Suscribirse a los cambios globales en tiempo real
+    this.dbSub = this.supabase.gastosCambiados$.subscribe(() => {
+      this.cargarDatos();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.dbSub) {
+      this.dbSub.unsubscribe();
+    }
   }
 
   async ionViewWillEnter() {
     await this.categoriasService.cargarCategorias();
     await this.cargarDatos();
+  }
+
+  async handleRefresh(event: any) {
+    await this.categoriasService.cargarCategorias();
+    await this.cargarDatos();
+    event.target.complete();
   }
 
   async cargarDatos() {
