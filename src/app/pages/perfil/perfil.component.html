@@ -4,7 +4,7 @@
       <ion-button fill="clear" aria-label="perfil" class="ion-no-margin ion-no-padding">
         <ion-icon slot="icon-only" name="person-circle" class="profile-icon"></ion-icon>
       </ion-button>
-      <h1 class="profile-title ion-no-margin">{{ auth.nombreUsuario() }}</h1>
+      <h1 class="profile-title ion-no-margin">Gasto Fácil</h1>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -13,32 +13,41 @@
   <!-- ====== VISTA AUTENTICADO ====== -->
   @if (!auth.esAnonimo()) {
     <div class="authenticated-view">
-      <div class="welcome-banner">
-        <div class="welcome-avatar">
-          <ion-icon name="person-circle"></ion-icon>
+      <div class="welcome-banner-card">
+        <div class="circle-overlay circle-1"></div>
+        <div class="circle-overlay circle-2"></div>
+        
+        <div class="welcome-avatar-initials">
+          <span>{{ iniciales() }}</span>
         </div>
         <h2>{{ auth.nombreUsuario() }}</h2>
         <p>{{ auth.emailUsuario() }}</p>
       </div>
 
+      <div class="section-title">INFORMACIÓN PERSONAL</div>
+
       <div class="profile-card">
         <div class="profile-info-row">
-          <ion-icon name="person-outline"></ion-icon>
+          <div class="icon-box icon-blue">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
           <div>
-            <span class="info-label">Nombre</span>
+            <span class="info-label">NOMBRE</span>
             <span class="info-value">{{ auth.nombreUsuario() }}</span>
           </div>
         </div>
         <div class="profile-info-row">
-          <ion-icon name="mail-outline"></ion-icon>
+          <div class="icon-box icon-purple">
+            <ion-icon name="mail-outline"></ion-icon>
+          </div>
           <div>
-            <span class="info-label">Correo electrónico</span>
+            <span class="info-label">CORREO ELECTRÓNICO</span>
             <span class="info-value">{{ auth.emailUsuario() }}</span>
           </div>
         </div>
       </div>
 
-      <button class="logout-btn" (click)="cerrarSesion()" [disabled]="cargando()">
+      <button class="logout-btn-outline" (click)="cerrarSesion()" [disabled]="cargando()">
         @if (cargando()) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {

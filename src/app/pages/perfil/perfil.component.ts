@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
@@ -28,6 +28,12 @@ import { AuthService } from '../../services/auth.service';
 export class PerfilComponent {
   // Toggle entre 'login' y 'registro'
   vistaActiva = signal<'login' | 'registro'>('login');
+
+  iniciales = computed(() => {
+    const nombre = this.auth.nombreUsuario();
+    if (!nombre || nombre === 'Gasto Fácil') return 'GF';
+    return nombre.substring(0, 2).toUpperCase();
+  });
 
   // Campos del formulario
   nombre = '';
