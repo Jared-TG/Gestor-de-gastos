@@ -23,6 +23,7 @@
     "@angular/router": "^20.0.0",
     "@angular/service-worker": "^20.3.24",
     "@capacitor-community/camera-preview": "^8.0.1",
+    "@capacitor/android": "8.3.4",
     "@capacitor/app": "8.1.0",
     "@capacitor/camera": "^8.2.0",
     "@capacitor/core": "8.3.4",
