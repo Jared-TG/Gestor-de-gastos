@@ -1,0 +1,49 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/resumen" text="Estados de cuenta"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+    </div>
+  } @else {
+    @for (grupo of aniosAgrupados(); track grupo.anio) {
+      <ion-item-group>
+        <ion-item-divider class="year-divider">
+          <ion-label>{{ grupo.anio }}</ion-label>
+        </ion-item-divider>
+
+        @for (periodo of grupo.periodos; track periodo.mes) {
+          <ion-item class="period-item" lines="none">
+            <ion-label class="period-label">
+              <strong>{{ periodo.etiqueta }}</strong>
+            </ion-label>
+            <ion-button slot="end" fill="clear" color="dark" (click)="descargarPeriodo(periodo)" [disabled]="periodo.isDownloading">
+              @if (periodo.isDownloading) {
+                <ion-spinner name="crescent"></ion-spinner>
+              } @else {
+                <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+              }
+            </ion-button>
+          </ion-item>
+        }
+      </ion-item-group>
+    }
+
+    @if (aniosAgrupados().length === 0) {
+      <div class="empty-state">
+        <p>No hay estados de cuenta disponibles.</p>
+      </div>
+    }
+  }
+</ion-content>

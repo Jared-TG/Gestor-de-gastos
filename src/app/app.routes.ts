@@ -60,4 +60,11 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'estados-cuenta',
+    loadComponent: () =>
+      import('./pages/estados-cuenta/estados-cuenta.component').then(
+        (m) => m.EstadosCuentaComponent
+      ),
+  },
 ];

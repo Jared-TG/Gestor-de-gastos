@@ -1,0 +1,50 @@
+ion-toolbar {
+  --background: transparent;
+  
+  ion-back-button {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.year-divider {
+  --background: transparent;
+  --color: #6b7280;
+  font-size: 0.95rem;
+  padding-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.period-item {
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  margin-bottom: 1rem;
+  
+  .period-label {
+    font-size: 1.1rem;
+    color: #111827;
+  }
+
+  ion-button {
+    margin: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    ion-icon {
+      font-size: 1.4rem;
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 3rem;
+  color: #6b7280;
+}
