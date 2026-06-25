@@ -7,6 +7,9 @@
       <h1 class="profile-title">Gasto Fácil</h1>
     </div>
     <ion-buttons slot="end">
+      <ion-button fill="clear" aria-label="Exportar PDF" (click)="exportarPDF()" [disabled]="isExporting()">
+        <ion-icon slot="icon-only" name="document-text-outline"></ion-icon>
+      </ion-button>
       <ion-button fill="clear" aria-label="Notificaciones">
         <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
       </ion-button>

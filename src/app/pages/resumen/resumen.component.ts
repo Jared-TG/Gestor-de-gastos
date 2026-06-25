@@ -12,11 +12,13 @@ import {
   restaurantOutline, medkitOutline, schoolOutline, homeOutline,
   airplaneOutline, cartOutline, giftOutline, fitnessOutline,
   pawOutline, constructOutline, musicalNotesOutline, bookOutline,
-  busOutline, flashOutline, gameControllerOutline, layersOutline
+  busOutline, flashOutline, gameControllerOutline, layersOutline,
+  documentTextOutline
 } from 'ionicons/icons';
 import { SupabaseService, Gasto } from '../../services/supabase.service';
 import { FiltroMesService } from '../../services/filtro-mes.service';
 import { CategoriasService } from '../../services/categorias.service';
+import { PdfExportService } from '../../services/pdf-export.service';
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 
 export interface CategoriaResumen {
@@ -45,6 +47,9 @@ export class ResumenComponent {
 
   /** All expenses for the previous month (for comparison) */
   gastosDelMesPasado = signal<Gasto[]>([]);
+
+  /** Exporting state */
+  isExporting = signal(false);
 
   /** Total accumulated this month */
   totalAcumulado = computed(() =>
@@ -124,7 +129,8 @@ export class ResumenComponent {
   constructor(
     private supabase: SupabaseService,
     public filtroMes: FiltroMesService,
-    private categoriasService: CategoriasService
+    private categoriasService: CategoriasService,
+    private pdfExportService: PdfExportService
   ) {
     addIcons({
       personCircle, notificationsOutline, statsChartOutline,
@@ -134,7 +140,8 @@ export class ResumenComponent {
       restaurantOutline, medkitOutline, schoolOutline, homeOutline,
       airplaneOutline, cartOutline, giftOutline, fitnessOutline,
       pawOutline, constructOutline, musicalNotesOutline, bookOutline,
-      busOutline, flashOutline, gameControllerOutline, layersOutline
+      busOutline, flashOutline, gameControllerOutline, layersOutline,
+      documentTextOutline
     });
 
     // Recargar datos automáticamente cuando cambie el mes
@@ -172,5 +179,21 @@ export class ResumenComponent {
 
   getNombreMes(): string {
     return this.filtroMes.nombreMes();
+  }
+
+  async exportarPDF() {
+    this.isExporting.set(true);
+    try {
+      await this.pdfExportService.generarReporte(
+        this.filtroMes.etiquetaMes(),
+        this.totalAcumulado(),
+        this.categoriasResumen(),
+        this.gastosDelMes()
+      );
+    } catch (error) {
+      console.error('Error al exportar PDF:', error);
+    } finally {
+      this.isExporting.set(false);
+    }
   }
 }
