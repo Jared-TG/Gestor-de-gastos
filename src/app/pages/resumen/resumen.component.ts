@@ -1,7 +1,7 @@
 import { Component, signal, computed, effect } from '@angular/core';
 import {
   IonContent, IonHeader, IonToolbar, IonIcon,
-  IonButtons, IonButton
+  IonButtons, IonButton, NavController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -130,7 +130,8 @@ export class ResumenComponent {
     private supabase: SupabaseService,
     public filtroMes: FiltroMesService,
     private categoriasService: CategoriasService,
-    private pdfExportService: PdfExportService
+    private pdfExportService: PdfExportService,
+    private navCtrl: NavController
   ) {
     addIcons({
       personCircle, notificationsOutline, statsChartOutline,
@@ -181,19 +182,7 @@ export class ResumenComponent {
     return this.filtroMes.nombreMes();
   }
 
-  async exportarPDF() {
-    this.isExporting.set(true);
-    try {
-      await this.pdfExportService.generarReporte(
-        this.filtroMes.etiquetaMes(),
-        this.totalAcumulado(),
-        this.categoriasResumen(),
-        this.gastosDelMes()
-      );
-    } catch (error) {
-      console.error('Error al exportar PDF:', error);
-    } finally {
-      this.isExporting.set(false);
-    }
+  exportarPDF() {
+    this.navCtrl.navigateForward('/estados-cuenta');
   }
 }

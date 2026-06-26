@@ -61,6 +61,50 @@ export class SupabaseService {
     return this.supabase;
   }
 
+  async obtenerNombreUsuario(): Promise<string> {
+    const { data: { user }, error } = await this.supabase.auth.getUser();
+    if (error || !user) return 'Usuario';
+    const name = user.user_metadata?.['full_name'] || user.user_metadata?.['name'];
+    if (name) return name;
+    if (user.email) return user.email.split('@')[0];
+    return 'Usuario';
+  }
+
+  async obtenerFechaCreacionCuenta(): Promise<Date | null> {
+    const { data: { user }, error } = await this.supabase.auth.getUser();
+    if (error) {
+      console.error('Error al obtener usuario actual:', error);
+      return null;
+    }
+    if (user && user.created_at) {
+      return new Date(user.created_at);
+    }
+    return null;
+  }
+
+  async obtenerFechaPrimerGasto(): Promise<Date | null> {
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .select('fecha_gasto')
+      .order('fecha_gasto', { ascending: true })
+      .limit(1)
+      .single();
+
+    if (error) {
+      // Si no hay datos (PGRST116 is code for '0 rows returned' in single()), it's fine, return null
+      if (error.code !== 'PGRST116') {
+        console.error('Error al obtener el primer gasto:', error);
+      }
+      return null;
+    }
+
+    if (data && data.fecha_gasto) {
+      // Append time to ensure it parses correctly in local timezone without shifting
+      return new Date(`${data.fecha_gasto}T00:00:00`);
+    }
+    return null;
+  }
+
   async insertarGasto(gasto: Gasto) {
     const { data: { session } } = await this.supabase.auth.getSession();
     
