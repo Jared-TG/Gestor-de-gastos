@@ -22,6 +22,39 @@ export class PdfExportService {
 
   constructor(private platform: Platform) {}
 
+  private buildGradientRects(x: number, y: number, w: number, h: number, colorStart: string, colorEnd: string, steps: number = 60) {
+    const hexToRgb = (hex: string) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : { r: 0, g: 0, b: 0 };
+    };
+
+    const rgbToHex = (r: number, g: number, b: number) => {
+      return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+    };
+
+    const start = hexToRgb(colorStart);
+    const end = hexToRgb(colorEnd);
+    const stepWidth = w / steps;
+    const rects: any[] = [];
+
+    for (let i = 0; i < steps; i++) {
+      const ratio = i / (steps - 1);
+      const r = Math.round(start.r + (end.r - start.r) * ratio);
+      const g = Math.round(start.g + (end.g - start.g) * ratio);
+      const b = Math.round(start.b + (end.b - start.b) * ratio);
+      rects.push({
+        type: 'rect',
+        x: x + (i * stepWidth),
+        y: y,
+        w: stepWidth + 0.5,
+        h: h,
+        color: rgbToHex(r, g, b),
+        lineColor: rgbToHex(r, g, b)
+      });
+    }
+    return rects;
+  }
+
   async generarReporte(
     mesLabel: string,
     totalAcumulado: number,
@@ -91,15 +124,13 @@ export class PdfExportService {
       pageSize: 'A4',
       pageMargins: [40, 120, 40, 60], // Left, Top, Right, Bottom
 
-      background: function (currentPage: number) {
+      background: (currentPage: number) => {
         return {
           canvas: [
-            // Background banner
-            { type: 'rect', x: 0, y: 0, w: 595.28, h: 100, color: '#2563eb' },
-            // Orange bottom line
-            { type: 'rect', x: 0, y: 100, w: 595.28, h: 3, color: '#f59e0b' },
-            // Footer top line
-            { type: 'rect', x: 40, y: 841.89 - 50, w: 595.28 - 80, h: 1, color: '#1e3a8a' }
+            // Background banner gradient
+            ...this.buildGradientRects(0, 0, 595.28, 100, '#1e3a8a', '#2563eb', 80),
+            // Bottom orange line
+            { type: 'rect', x: 40, y: 841.89 - 65, w: 515.28, h: 2, color: '#f59e0b' }
           ]
         };
       },
@@ -140,33 +171,33 @@ export class PdfExportService {
 
       footer: function (currentPage: number, pageCount: number) {
         return {
-          margin: [40, 10, 40, 0],
+          margin: [40, 20, 40, 0],
           columns: [
             {
               width: 'auto',
               columns: [
                 {
-                  image: LOGO_BASE64, width: 14, height: 14, margin: [0, 0, 0, 0]
+                  image: LOGO_BASE64, width: 20, height: 20, margin: [0, 0, 0, 0]
                 },
                 { 
-                  text: 'Gasto Fácil', fontSize: 9, color: '#1d4ed8', bold: true, margin: [6, 2, 0, 0] 
+                  text: 'Gasto Fácil', fontSize: 10, color: '#1e3a8a', bold: true, margin: [8, 3, 0, 0] 
                 }
               ]
             },
             {
               text: `Documento generado automáticamente - ${fechaGeneracion}`,
-              fontSize: 7,
+              fontSize: 8,
               color: '#9ca3af',
               alignment: 'center',
-              margin: [0, 3, 0, 0],
+              margin: [0, 5, 0, 0],
               width: '*'
             },
             {
               text: `Página ${currentPage} de ${pageCount}`,
-              fontSize: 7,
+              fontSize: 8,
               color: '#9ca3af',
               alignment: 'right',
-              margin: [0, 3, 0, 0],
+              margin: [0, 5, 0, 0],
               width: 'auto'
             }
           ]
@@ -177,61 +208,48 @@ export class PdfExportService {
         // User Card
         {
           margin: [0, 0, 0, 20],
-          table: {
-            widths: ['*'],
-            body: [
-              [
+          stack: [
+            {
+              canvas: [
+                { type: 'rect', x: 0, y: 0, w: 515.28, h: 70, r: 12, color: '#f8fafc' }
+              ]
+            },
+            {
+              margin: [20, -55, 20, 0],
+              columns: [
                 {
-                  fillColor: '#f8fafc',
-                  border: [false, false, false, false],
-                  margin: [20, 15, 20, 15],
-                  columns: [
-                    {
-                      width: 'auto',
-                      canvas: [
-                        { type: 'ellipse', x: 20, y: 20, r1: 20, r2: 20, color: '#2563eb' }
-                      ]
-                    },
-                    {
-                      width: 'auto',
-                      // Absolutely position initials over canvas
-                      text: userInitials,
-                      color: 'white',
-                      bold: true,
-                      fontSize: 14,
-                      margin: [-29, 13, 0, 0]
-                    },
-                    {
-                      width: '*',
-                      margin: [15, 6, 0, 0],
-                      stack: [
-                        { text: 'Reporte correspondiente a', color: '#6b7280', fontSize: 9 },
-                        { text: `${userName} • ${mesLabel}`, color: '#1e3a8a', fontSize: 12, bold: true }
-                      ]
-                    },
-                    {
-                      width: 'auto',
-                      margin: [0, 2, 0, 0],
-                      stack: [
-                        { text: 'Total del periodo', color: '#6b7280', fontSize: 9, alignment: 'right' },
-                        { text: this.currencyPipe.transform(totalAcumulado, '$', 'symbol', '1.2-2') || '$0.00', color: '#1d4ed8', fontSize: 22, bold: true, alignment: 'right' }
-                      ]
-                    }
+                  width: 'auto',
+                  canvas: [
+                    { type: 'ellipse', x: 20, y: 20, r1: 20, r2: 20, color: '#2563eb' }
+                  ]
+                },
+                {
+                  width: 'auto',
+                  text: userInitials,
+                  color: 'white',
+                  bold: true,
+                  fontSize: 14,
+                  margin: [-29, 13, 0, 0]
+                },
+                {
+                  width: '*',
+                  margin: [15, 6, 0, 0],
+                  stack: [
+                    { text: 'Reporte correspondiente a', color: '#6b7280', fontSize: 9 },
+                    { text: `${userName} - ${mesLabel}`, color: '#1e3a8a', fontSize: 12, bold: true }
+                  ]
+                },
+                {
+                  width: 'auto',
+                  margin: [0, 2, 0, 0],
+                  stack: [
+                    { text: 'Total del periodo', color: '#6b7280', fontSize: 9, alignment: 'right' },
+                    { text: this.currencyPipe.transform(totalAcumulado, '$', 'symbol', '1.2-2') || '$0.00', color: '#1e3a8a', fontSize: 22, bold: true, alignment: 'right' }
                   ]
                 }
               ]
-            ]
-          },
-          layout: {
-            hLineWidth: () => 1,
-            vLineWidth: () => 1,
-            hLineColor: () => '#e2e8f0',
-            vLineColor: () => '#e2e8f0',
-            paddingLeft: () => 0,
-            paddingRight: () => 0,
-            paddingTop: () => 0,
-            paddingBottom: () => 0
-          }
+            }
+          ]
         },
 
         // Resumen General Header
@@ -265,6 +283,9 @@ export class PdfExportService {
       defaultStyle: {
         fontSize: 10,
         color: '#1f2937'
+      },
+      styles: {
+        th: { color: 'white', bold: true, fontSize: 9 }
       }
     };
   }
@@ -291,28 +312,20 @@ export class PdfExportService {
   private buildStatCard(title: string, value: string, valueColor: string) {
     return {
       width: '*',
-      table: {
-        widths: ['*'],
-        body: [
-          [
-            {
-              border: [false, false, false, false],
-              fillColor: '#ffffff',
-              margin: [10, 10, 10, 10],
-              stack: [
-                { text: title, fontSize: 8, color: '#9ca3af', bold: true, characterSpacing: 1 },
-                { text: value, fontSize: 18, color: valueColor, bold: true, margin: [0, 5, 0, 0] }
-              ]
-            }
+      stack: [
+        {
+          canvas: [
+            { type: 'rect', x: 0, y: 0, w: 165, h: 60, r: 8, color: '#ffffff', lineColor: '#e2e8f0', lineWidth: 1 }
           ]
-        ]
-      },
-      layout: {
-        hLineWidth: () => 1,
-        vLineWidth: () => 1,
-        hLineColor: () => '#e2e8f0',
-        vLineColor: () => '#e2e8f0'
-      }
+        },
+        {
+          margin: [15, -45, 0, 0],
+          stack: [
+            { text: title, fontSize: 8, color: '#9ca3af', bold: true, characterSpacing: 1 },
+            { text: value, fontSize: 18, color: valueColor, bold: true, margin: [0, 5, 0, 0] }
+          ]
+        }
+      ]
     };
   }
 
@@ -333,30 +346,26 @@ export class PdfExportService {
       const percentage = cat.porcentaje;
       body.push([
         {
-          border: [false, false, false, true],
-          margin: [5, 10, 5, 10],
           stack: [
             { text: cat.nombre, fontSize: 10, color: '#1f2937' },
             {
               margin: [0, 8, 0, 0],
               canvas: [
-                { type: 'rect', x: 0, y: 0, w: 150, h: 4, color: '#e5e7eb', r: 2 },
-                { type: 'rect', x: 0, y: 0, w: 150 * percentage, h: 4, color: '#2563eb', r: 2 }
+                { type: 'rect', x: 0, y: 0, w: 150, h: 4, color: '#e5e7eb' },
+                ...this.buildGradientRects(0, 0, 150 * percentage, 4, '#1e3a8a', '#2563eb', Math.max(5, Math.floor(50 * percentage)))
               ]
             }
           ]
         },
         {
-          border: [false, false, false, true],
-          margin: [5, 20, 5, 10],
+          margin: [0, 10, 0, 0],
           text: `${(percentage * 100).toFixed(1)}%`,
           color: '#2563eb',
           bold: true,
           alignment: 'right'
         },
         {
-          border: [false, false, false, true],
-          margin: [5, 20, 5, 10],
+          margin: [0, 10, 0, 0],
           text: this.currencyPipe.transform(cat.total, '$', 'symbol', '1.2-2') || '',
           color: '#111827',
           bold: true,
@@ -365,34 +374,37 @@ export class PdfExportService {
       ]);
     });
 
-    // Total Row
     body.push([
-      { text: 'TOTAL', border: [false, false, false, false], margin: [5, 10, 5, 10], bold: true, color: '#1e3a8a' },
-      { text: '100%', border: [false, false, false, false], margin: [5, 10, 5, 10], bold: true, alignment: 'right', color: '#1e3a8a' },
-      { text: this.currencyPipe.transform(totalAcumulado, '$', 'symbol', '1.2-2') || '', border: [false, false, false, false], margin: [5, 10, 5, 10], bold: true, alignment: 'right', color: '#1e3a8a' }
+      { text: 'TOTAL', bold: true, color: '#1e3a8a' },
+      { text: '100%', bold: true, alignment: 'right', color: '#1e3a8a' },
+      { text: this.currencyPipe.transform(totalAcumulado, '$', 'symbol', '1.2-2') || '', bold: true, alignment: 'right', color: '#1e3a8a' }
     ]);
 
     return {
+      margin: [0, 0, 0, 20],
       table: {
         headerRows: 1,
         widths: ['*', 'auto', 'auto'],
         body: body
       },
       layout: {
-        hLineWidth: (i: number, node: any) => i === 0 || i === 1 || i === node.table.body.length - 1 || i === node.table.body.length ? 0 : 1,
-        vLineWidth: () => 0,
+        hLineWidth: (i: number, node: any) => {
+          if (i === 0 || i === node.table.body.length) return 1;
+          if (i === 1) return 0; // under header
+          return 1;
+        },
+        vLineWidth: (i: number, node: any) => (i === 0 || i === node.table.widths.length ? 1 : 0),
         hLineColor: () => '#e2e8f0',
-        paddingLeft: () => 10,
-        paddingRight: () => 10,
+        vLineColor: () => '#e2e8f0',
+        paddingLeft: () => 15,
+        paddingRight: () => 15,
+        paddingTop: (i: number) => i === 0 ? 11 : 10,
+        paddingBottom: (i: number) => i === 0 ? 11 : 10,
         fillColor: (rowIndex: number) => {
-          if (rowIndex === 0) return '#2563eb';
+          if (rowIndex === 0) return '#1d4ed8';
           if (rowIndex === body.length - 1) return '#f8fafc';
-          return null;
+          return '#ffffff';
         }
-      },
-      margin: [0, 0, 0, 20],
-      styles: {
-        th: { color: 'white', bold: true, fontSize: 9 }
       }
     };
   }
@@ -419,20 +431,18 @@ export class PdfExportService {
       const catNombre = categoria ? categoria.nombre : 'Otra';
 
       body.push([
-        { text: formattedDate, border: [false, false, false, true], margin: [5, 10, 5, 10], color: '#6b7280' },
-        { text: gasto.concepto || 'Sin descripción', border: [false, false, false, true], margin: [5, 10, 5, 10], color: '#1f2937' },
+        { text: formattedDate, color: '#6b7280' },
+        { text: gasto.concepto || 'Sin descripción', color: '#1f2937' },
         { 
-          border: [false, false, false, true],
-          margin: [5, 10, 5, 10],
           alignment: 'center',
-          // Simulate a badge using a small table
           table: {
             widths: ['auto'],
             body: [[{ text: catNombre, fontSize: 8, color: '#2563eb', fillColor: '#eff6ff', border: [false, false, false, false], margin: [6, 3, 6, 3] }]]
           },
-          layout: { defaultBorder: false }
+          layout: { defaultBorder: false },
+          margin: [0, -3, 0, 0]
         },
-        { text: `-${this.currencyPipe.transform(gasto.monto, '$', 'symbol', '1.2-2')}`, border: [false, false, false, true], margin: [5, 10, 5, 10], color: '#dc2626', bold: true, alignment: 'right' }
+        { text: `-${this.currencyPipe.transform(gasto.monto, '$', 'symbol', '1.2-2')}`, color: '#dc2626', bold: true, alignment: 'right' }
       ]);
     });
 
@@ -443,18 +453,22 @@ export class PdfExportService {
         body: body
       },
       layout: {
-        hLineWidth: (i: number, node: any) => i === 0 || i === 1 || i === node.table.body.length ? 0 : 1,
-        vLineWidth: () => 0,
+        hLineWidth: (i: number, node: any) => {
+          if (i === 0 || i === node.table.body.length) return 1;
+          if (i === 1) return 0; // under header
+          return 1;
+        },
+        vLineWidth: (i: number, node: any) => (i === 0 || i === node.table.widths.length ? 1 : 0),
         hLineColor: () => '#e2e8f0',
-        paddingLeft: () => 10,
-        paddingRight: () => 10,
+        vLineColor: () => '#e2e8f0',
+        paddingLeft: () => 15,
+        paddingRight: () => 15,
+        paddingTop: (i: number) => i === 0 ? 12 : 12,
+        paddingBottom: (i: number) => i === 0 ? 12 : 12,
         fillColor: (rowIndex: number) => {
-          if (rowIndex === 0) return '#2563eb';
-          return null;
+          if (rowIndex === 0) return '#1d4ed8';
+          return '#ffffff';
         }
-      },
-      styles: {
-        th: { color: 'white', bold: true, fontSize: 9 }
       }
     };
   }

@@ -64,7 +64,10 @@ export class SupabaseService {
   async obtenerNombreUsuario(): Promise<string> {
     const { data: { user }, error } = await this.supabase.auth.getUser();
     if (error || !user) return 'Usuario';
-    return user.user_metadata?.['full_name'] || user.user_metadata?.['name'] || 'Usuario';
+    const name = user.user_metadata?.['full_name'] || user.user_metadata?.['name'];
+    if (name) return name;
+    if (user.email) return user.email.split('@')[0];
+    return 'Usuario';
   }
 
   async obtenerFechaCreacionCuenta(): Promise<Date | null> {
