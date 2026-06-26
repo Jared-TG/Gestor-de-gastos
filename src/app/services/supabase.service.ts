@@ -61,6 +61,12 @@ export class SupabaseService {
     return this.supabase;
   }
 
+  async obtenerNombreUsuario(): Promise<string> {
+    const { data: { user }, error } = await this.supabase.auth.getUser();
+    if (error || !user) return 'Usuario';
+    return user.user_metadata?.['full_name'] || user.user_metadata?.['name'] || 'Usuario';
+  }
+
   async obtenerFechaCreacionCuenta(): Promise<Date | null> {
     const { data: { user }, error } = await this.supabase.auth.getUser();
     if (error) {

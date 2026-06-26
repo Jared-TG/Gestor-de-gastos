@@ -171,13 +171,17 @@ export class EstadosCuentaComponent implements OnInit {
         .filter(cat => cat.total > 0)
         .sort((a, b) => b.total - a.total);
 
-      // 5. Generar PDF
+      // 5. Obtener nombre del usuario
+      const userName = await this.supabase.obtenerNombreUsuario();
+
+      // 6. Generar PDF
       const etiqueta = `${periodo.etiqueta} ${periodo.anio}`;
       await this.pdfExportService.generarReporte(
         etiqueta,
         totalAcumulado,
         categoriasResumen,
-        gastos
+        gastos,
+        userName
       );
 
     } catch (error) {
