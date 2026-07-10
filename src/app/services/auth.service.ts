@@ -57,13 +57,20 @@ export class AuthService {
    * en una cuenta permanente. Esto hereda todos los datos (gastos)
    * asociados al usuario anónimo.
    */
-  async registrar(nombre: string, email: string, password: string) {
+  async registrar(nombre: string, email: string, password: string, whatsappNumber?: string) {
     // updateUser convierte la sesión anónima en permanente,
     // preservando el mismo user_id y sus datos asociados.
+    
+    const userData: any = { nombre };
+    if (whatsappNumber) {
+      userData.numero = whatsappNumber; // Actualizado para coincidir con la tabla del colaborador
+      userData.receive_whatsapp_reports = true; // Por defecto activamos la opción si proporciona el número al registrarse
+    }
+
     const { data, error } = await this.supabaseService.client.auth.updateUser({
       email,
       password,
-      data: { nombre }
+      data: userData
     });
 
     if (error) throw error;

@@ -3,15 +3,17 @@ import { FormsModule } from '@angular/forms';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
   IonIcon, IonButton, IonButtons, IonInput, IonItem,
-  IonList, IonLabel, IonText, IonSpinner,
+  IonList, IonLabel, IonText, IonSpinner, IonToggle
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   personCircle, mailOutline, lockClosedOutline,
   personOutline, eyeOutline, eyeOffOutline,
-  logOutOutline, chevronForwardOutline
+  logOutOutline, chevronForwardOutline,
+  logoWhatsapp, callOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
+import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
   selector: 'app-perfil',
@@ -22,7 +24,7 @@ import { AuthService } from '../../services/auth.service';
     FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonIcon, IonButton, IonButtons, IonInput, IonItem,
-    IonList, IonLabel, IonText, IonSpinner,
+    IonList, IonLabel, IonText, IonSpinner, IonToggle
   ],
 })
 export class PerfilComponent {
@@ -40,6 +42,7 @@ export class PerfilComponent {
   email = '';
   password = '';
   confirmarPassword = '';
+  whatsappRegistro = '';
 
   // Estados UI
   mostrarPassword = signal(false);
@@ -48,12 +51,48 @@ export class PerfilComponent {
   errorMsg = signal('');
   exitoMsg = signal('');
 
-  constructor(public auth: AuthService) {
+  // Preferencias WhatsApp
+  recibirReportes = signal(false);
+  whatsappNumber = '';
+
+  constructor(public auth: AuthService, private supabaseService: SupabaseService) {
     addIcons({
       personCircle, mailOutline, lockClosedOutline,
       personOutline, eyeOutline, eyeOffOutline,
-      logOutOutline, chevronForwardOutline
+      logOutOutline, chevronForwardOutline,
+      logoWhatsapp, callOutline
     });
+    this.cargarPreferencias();
+  }
+
+  async cargarPreferencias() {
+    if (!this.auth.esAnonimo()) {
+      try {
+        const prefs = await this.supabaseService.obtenerPreferenciasUsuario();
+        this.recibirReportes.set(prefs.receive_whatsapp_reports || false);
+        this.whatsappNumber = prefs.numero || '';
+      } catch (error) {
+        console.error('Error al cargar preferencias:', error);
+      }
+    }
+  }
+
+  async toggleReportes(event: any) {
+    const isChecked = event.detail.checked;
+    this.recibirReportes.set(isChecked);
+    try {
+      await this.supabaseService.actualizarPreferenciasUsuario({ receive_whatsapp_reports: isChecked });
+    } catch (error) {
+      console.error('Error al guardar preferencia de reportes:', error);
+    }
+  }
+
+  async guardarNumeroWhatsApp() {
+    try {
+      await this.supabaseService.actualizarPreferenciasUsuario({ numero: this.whatsappNumber });
+    } catch (error) {
+      console.error('Error al guardar número de WhatsApp:', error);
+    }
   }
 
   cambiarVista(vista: 'login' | 'registro') {
@@ -109,7 +148,7 @@ export class PerfilComponent {
     this.errorMsg.set('');
 
     try {
-      await this.auth.registrar(this.nombre, this.email, this.password);
+      await this.auth.registrar(this.nombre, this.email, this.password, this.whatsappRegistro);
       this.exitoMsg.set('¡Cuenta creada exitosamente!');
       this.limpiarFormulario();
     } catch (error: any) {
@@ -137,6 +176,7 @@ export class PerfilComponent {
     this.email = '';
     this.password = '';
     this.confirmarPassword = '';
+    this.whatsappRegistro = '';
     this.errorMsg.set('');
   }
 

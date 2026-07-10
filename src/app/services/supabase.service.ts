@@ -70,6 +70,26 @@ export class SupabaseService {
     return 'Usuario';
   }
 
+  async obtenerPreferenciasUsuario() {
+    const { data: { user }, error } = await this.supabase.auth.getUser();
+    if (error || !user) return { numero: '', receive_whatsapp_reports: false };
+    
+    return {
+      numero: user.user_metadata?.['numero'] || '',
+      receive_whatsapp_reports: user.user_metadata?.['receive_whatsapp_reports'] || false
+    };
+  }
+
+  async actualizarPreferenciasUsuario(preferencias: { numero?: string; receive_whatsapp_reports?: boolean }): Promise<void> {
+    const { error } = await this.supabase.auth.updateUser({
+      data: preferencias
+    });
+    if (error) {
+      console.error('Error actualizando preferencias de usuario:', error);
+      throw error;
+    }
+  }
+
   async obtenerFechaCreacionCuenta(): Promise<Date | null> {
     const { data: { user }, error } = await this.supabase.auth.getUser();
     if (error) {
